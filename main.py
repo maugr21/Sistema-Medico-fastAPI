@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import Annotated
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
+from fastapi.staticfiles import StaticFiles
 
 SECRET_KEY ="1234567890"
 TOKEN_SECONDS_EXP=60
@@ -11,6 +12,8 @@ TOKEN_SECONDS_EXP=60
 app = FastAPI()
 
 jinja2_template = Jinja2Templates(directory="views")
+
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 db_users={
     "Mau":{
