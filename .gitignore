@@ -1,1 +1,3 @@
-/venv
+/.venv
+base_sistema_medico.sql
+/pycache
