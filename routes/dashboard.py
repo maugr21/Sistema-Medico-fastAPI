@@ -43,20 +43,6 @@ def dashboard_user(request: Request, access_token: str | None = Cookie(None), db
         return templates.TemplateResponse("viewsU/dashboard.html", {"request": request, "users":doctors})
     except Exception:
         return RedirectResponse("/", status_code=302)
-
-@router.get("/users/dashboard-doc", response_class=RedirectResponse)
-def dashboard_doc(request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
-    if not access_token:
-        return RedirectResponse("/", status_code=302)
-    
-    try:
-        user_data = decode_token(access_token)
-        user = get_user(user_data["username"], db)
-        if not user or user.rol != 1: 
-            return RedirectResponse("/", status_code=302)
-        return templates.TemplateResponse("viewsDoc/dashboard.html", {"request": request})
-    except Exception:
-        return RedirectResponse("/", status_code=302)
     
 @router.get("/users/details/{id_usuario}", response_class=HTMLResponse)
 def user_details(id_usuario: int, request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
@@ -92,8 +78,7 @@ def agendarCitaForm(id_usuario: int, request: Request, access_token: str | None 
         
         if not user:
             return RedirectResponse("/", status_code=302)
-        
-        #obtener lista de médicos
+
         medicos= db.query(Usuario).filter(Usuario.rol == 1).all()
         
         return templates.TemplateResponse("viewsU/AgendarCita.html",{"request": request, "id_usuario":id_usuario, "medicos":medicos})
@@ -111,27 +96,23 @@ def agendarCita(
     db: Session = Depends(get_db)
 ):
     try:
-        # Recuperar el usuario que inició sesión a través del token
         if not access_token:
             return RedirectResponse("/", status_code=302)
 
-        user_data = decode_token(access_token)  # Decodifica el token del usuario
-        user = get_user(user_data["username"], db)  # Obtén el usuario de la BD
+        user_data = decode_token(access_token) 
+        user = get_user(user_data["username"], db) 
 
-        if not user or user.rol != 0:  # Asegúrate de que sea un paciente
+        if not user or user.rol != 0:  
             return RedirectResponse("/", status_code=302)
-
-        # Crear nueva cita con el ID del usuario que inició sesión
+        
         nueva_cita = CitaMedica(
-            id_usuario=user.id_usuario,  # ID del usuario que inició sesión
-            id_medico=id_medico,  # ID del médico seleccionado
+            id_usuario=user.id_usuario, 
+            id_medico=id_medico, 
             fecha_cita=datetime.strptime(fecha_cita, "%Y-%m-%dT%H:%M"),
             confirm_cita=False
         )
         db.add(nueva_cita)
         db.commit()
-
-        # Redireccionar al detalle del usuario
         return RedirectResponse(f"/users/details/{id_usuario}", status_code=302)
     except Exception as e:
         print(f"Error al agendar cita: {e}")
@@ -163,4 +144,6 @@ def mis_citas(
     except Exception as e:
         print(f"Error al obtener citas: {e}")
         return RedirectResponse("/", status_code=302)
+    
+
 

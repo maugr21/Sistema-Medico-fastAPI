@@ -3,13 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - Doctor</title>
 </head>
 <body>
-    <h1>Dashboard Doctor
-    </h1>
+    <h1>Dashboard del Doctor</h1>
     <form action="/users/logout" method="post">
-        <input type="submit" value="logout">
+        <input type="submit" value="Cerrar sesión">
     </form>
+
+    <h2>Mis Citas</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Fecha y hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td>{{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</td>
+                <td>{{ cita.fecha_cita }}</td>
+                <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
+                <td>
+                    <a href="/users/crear-receta/{{ cita.id_cita }}">Crear Receta</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

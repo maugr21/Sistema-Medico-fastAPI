@@ -1,5 +1,8 @@
+from datetime import datetime
+from typing import Text
 from .database import Base, engine
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Boolean, Date
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Boolean, Date, Text
 
 class Usuario(Base):
     __tablename__='usuarios'
@@ -20,3 +23,16 @@ class CitaMedica(Base):
     id_medico = Column(Integer, ForeignKey('usuarios.id_usuario'), nullable=False)
     fecha_cita=Column(DateTime, nullable=False)
     confirm_cita=Column(Boolean, default=False)
+    
+    #Relaciones
+    usuario = relationship("Usuario", foreign_keys=[id_usuario])
+    medico=relationship("Usuario",foreign_keys=[id_medico])
+    
+class RecMedicaPaciente(Base):
+    __tablename__='Rec_Medica_Paciente'
+    id_receta=Column(Integer, primary_key=True, index=True)
+    id_usuario=Column(Integer, ForeignKey("usuarios.id_usuario"))
+    id_medico=Column(Integer, ForeignKey("usuarios.id_usuario"))
+    anotaciones_receta_paciente=Column(Text, nullable=False)
+    fecha_cita=Column(DateTime)
+    
