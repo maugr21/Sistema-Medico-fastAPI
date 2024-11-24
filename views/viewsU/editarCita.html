@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Cita</title>
+</head>
+<body>
+    <h1>Editar Cita</h1>
+    <form action="/users/editarCita/{{ cita.id_cita }}" method="post">
+        <label for="id_medico">Seleccionar Médico:</label>
+        <select name="id_medico" id="id_medico">
+            {% for medico in medicos %}
+            <option value="{{ medico.id_usuario }}" {% if medico.id_usuario == cita.id_medico %} selected {% endif %}>{{ medico.nombre }} {{ medico.apellido }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="fecha_cita">Fecha y Hora:</label>
+        <input type="datetime-local" name="fecha_cita" value="{{ cita.fecha_cita.strftime('%Y-%m-%dT%H:%M') }}" required>
+
+        <button type="submit">Actualizar Cita</button>
+    </form>
+    <a href="/users/misCitas">Volver a Mis Citas</a>
+</body>
+</html>

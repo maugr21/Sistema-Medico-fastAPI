@@ -23,8 +23,6 @@ class CitaMedica(Base):
     id_medico = Column(Integer, ForeignKey('usuarios.id_usuario'), nullable=False)
     fecha_cita=Column(DateTime, nullable=False)
     confirm_cita=Column(Boolean, default=False)
-    
-    #Relaciones
     usuario = relationship("Usuario", foreign_keys=[id_usuario])
     medico=relationship("Usuario",foreign_keys=[id_medico])
     
@@ -35,4 +33,11 @@ class RecMedicaPaciente(Base):
     id_medico=Column(Integer, ForeignKey("usuarios.id_usuario"))
     anotaciones_receta_paciente=Column(Text, nullable=False)
     fecha_cita=Column(DateTime)
+    
+class ExpClinicoPaciente(Base):
+    __tablename__='exp_clinico_paciente'
+    id_expediente = Column(Integer, primary_key=True, index=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"))
+    anotaciones_nuevas_paciente=Column(Text)
+    fecha_cita=Column(DateTime, nullable=True)
     

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Anotación</title>
+</head>
+<body>
+    <h1>Actualizar Anotación</h1>
+
+    <!-- Formulario para actualizar la anotación -->
+    <form method="post" action="/users/actualizar-anotacion/{{ anotacion.id_expediente }}">
+        <textarea name="anotaciones_nuevas_paciente" placeholder="Actualiza la anotación">{{ anotacion.anotaciones_nuevas_paciente }}</textarea>
+        <button type="submit">Actualizar</button>
+    </form>
+
+    <!-- Botón para regresar al expediente -->
+    <a href="/users/ver-expediente/{{ anotacion.id_usuario }}">Regresar</a>
+</body>
+</html>

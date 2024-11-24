@@ -13,6 +13,7 @@
                 <th>Fecha y Hora</th>
                 <th>Médico</th>
                 <th>Confirmación</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -21,6 +22,12 @@
                 <td>{{ cita.fecha_cita }}</td>
                 <td>{{ cita.id_medico }}</td>
                 <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
+                <td>
+                    <a href="/users/editarCita/{{ cita.id_cita }}">Editar</a> |
+                    <form action="/users/eliminarCita/{{ cita.id_cita }}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -28,3 +35,4 @@
     <a href="/users/dashboard-user">Volver al Dashboard</a>
 </body>
 </html>
+

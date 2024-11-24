@@ -10,7 +10,7 @@
     <form action="/users/logout" method="post">
         <input type="submit" value="Cerrar sesión">
     </form>
-
+    <a href="/users/mis-pacientes" class="button">Ver pacientes clínicos</a>
     <h2>Mis Citas</h2>
     <table border="1">
         <thead>
@@ -30,9 +30,21 @@
                 <td>
                     <a href="/users/crear-receta/{{ cita.id_cita }}">Crear Receta</a>
                 </td>
+                <td>
+                    <!-- Siempre se muestran los botones de Actualizar y Eliminar -->
+                    <a href="/users/actualizar-receta/{{ cita.id_cita }}" class="button">Actualizar</a> |
+                    <form action="/users/eliminar-receta/{{ cita.id_cita }}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta receta?')" class="button">Eliminar</button>
+                    </form>
+                    
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </body>
 </html>
+
+
+

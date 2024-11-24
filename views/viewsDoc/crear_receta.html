@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Crear Receta</h1>
-    <form action="/users/crear-receta/{{ cita.id_cita }}" method="post">
+    <form action="/users/crear-receta/{{ cita.id_cita }}" method="POST">
         <label>Paciente: {{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</label><br>
         <label>Fecha de la cita: {{ cita.fecha_cita }}</label><br>
         <label for="anotaciones_receta_paciente">Anotaciones:</label><br>

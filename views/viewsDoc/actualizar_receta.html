@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Receta</title>
+</head>
+<body>
+    <h1>Actualizar Receta</h1>
+    <form action="/users/actualizar-receta/{{ receta.id_receta }}" method="post">
+        <label for="anotaciones_receta_paciente">Anotaciones:</label>
+        <textarea id="anotaciones_receta_paciente" name="anotaciones_receta_paciente" rows="4" cols="50" required>
+            {{ receta.anotaciones_receta_paciente }}
+        </textarea>
+        <br><br>
+        <button type="submit">Actualizar</button>
+    </form>
+    <a href="/users/dashboard-doc">Cancelar</a>
+</body>
+</html>
