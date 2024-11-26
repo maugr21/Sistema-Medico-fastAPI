@@ -10,14 +10,22 @@
     <a href="/users/misCitas">Mis Citas</a>
     <a href="/users/ver-expediente">Mi Expediente Clínico</a>
 
+    <!-- Formulario de búsqueda por especialidad -->
+    <form action="/users/dashboard-user" method="get">
+        <input type="text" name="especialidad" placeholder="Buscar por especialidad">
+        <input type="submit" value="Buscar">
+    </form>
+
     <div class="card-container">
-        {% for user in users%}
+        {% for user in users %}
         <div class="card">
-            <h3>{{user.nombre}}</h3>
+            <h3>{{ user.nombre }}</h3>
+            <p>Especialidad: {{ user.especialidad }}</p>
             <button onclick="window.location.href='/users/details/{{ user.id_usuario }}'">Ver información</button>
         </div>
         {% endfor %}
     </div>
+
     <form action="/users/logout" method="post">
         <input type="submit" value="logout">
     </form>

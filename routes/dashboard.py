@@ -29,8 +29,13 @@ def dashboard(request: Request, access_token: str | None = Cookie(None), db: Ses
         return RedirectResponse("/", status_code=302)
 
 
-@router.get("/users/dashboard-user", response_class=RedirectResponse)
-def dashboard_user(request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
+@router.get("/users/dashboard-user", response_class=HTMLResponse)
+def dashboard_user(
+    request: Request,
+    especialidad: str | None = None,  
+    access_token: str | None = Cookie(None),
+    db: Session = Depends(get_db)
+):
     if not access_token:
         return RedirectResponse("/", status_code=302)
     
@@ -39,10 +44,17 @@ def dashboard_user(request: Request, access_token: str | None = Cookie(None), db
         user = get_user(user_data["username"], db)
         if not user or user.rol != 0:  
             return RedirectResponse("/", status_code=302)
-        doctors = db.query(Usuario).filter(Usuario.rol==1).all()
-        return templates.TemplateResponse("viewsU/dashboard.html", {"request": request, "users":doctors})
-    except Exception:
+
+        query = db.query(Usuario).filter(Usuario.rol == 1)
+        if especialidad:
+            query = query.filter(Usuario.especialidad.ilike(f"%{especialidad}%"))
+        
+        doctors = query.all()
+        return templates.TemplateResponse("viewsU/dashboard.html", {"request": request, "users": doctors})
+    except Exception as e:
+        print(f"Error al obtener médicos: {e}")
         return RedirectResponse("/", status_code=302)
+
     
 @router.get("/users/details/{id_usuario}", response_class=HTMLResponse)
 def user_details(id_usuario: int, request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
