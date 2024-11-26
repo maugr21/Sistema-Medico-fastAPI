@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Form, HTTPException, Request, Cookie, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -80,7 +80,12 @@ def user_details(id_usuario: int, request: Request, access_token: str | None = C
        
        
 @router.get("/users/agendarCita/{id_usuario}", response_class=HTMLResponse)
-def agendarCitaForm(id_usuario: int, request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
+def agendarCitaForm(
+    id_usuario: int, 
+    request: Request, 
+    access_token: str | None = Cookie(None), 
+    db: Session = Depends(get_db)
+):
     if not access_token:
         return RedirectResponse("/", status_code=302)
     
@@ -90,14 +95,25 @@ def agendarCitaForm(id_usuario: int, request: Request, access_token: str | None 
         
         if not user:
             return RedirectResponse("/", status_code=302)
-
-        # Obtener el médico seleccionado por id
         medico = db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
-
+        today = datetime.now().date()
+        citas = db.query(CitaMedica).filter(
+            CitaMedica.id_medico == id_usuario,
+            CitaMedica.fecha_cita >= today,
+            CitaMedica.fecha_cita < today + timedelta(days=1)
+        ).all()
+        ocupadas = [cita.fecha_cita.strftime("%Y-%m-%dT%H:%M") for cita in citas]
+        available_hours = []
+        for hour in range(8, 18):
+            for minute in [0]:
+                datetime_str = f"{today}T{hour:02d}:{minute:02d}"
+                if datetime_str not in ocupadas:
+                    available_hours.append(datetime_str)
         return templates.TemplateResponse("viewsU/AgendarCita.html", {
             "request": request, 
             "id_usuario": id_usuario, 
-            "medico": medico
+            "medico": medico,
+            "available_hours": available_hours 
         })
     except Exception as e: 
         print(f"Error: {e}")
@@ -105,36 +121,48 @@ def agendarCitaForm(id_usuario: int, request: Request, access_token: str | None 
 
     
 
-@router.post("/users/agendarCita/{id_usuario}", response_class=RedirectResponse)
+@router.post("/users/agendarCita/{id_usuario}", response_class=HTMLResponse)
 def agendarCita(
-    id_usuario: int,
-    id_medico: int = Form(...),
-    fecha_cita: str = Form(...),
-    access_token: str | None = Cookie(None),
+    id_usuario: int,  # ID del médico
+    request: Request, 
+    access_token: str | None = Cookie(None), 
+    fecha_cita: str = Form(...),  # Fecha seleccionada en el formulario
+    hora_cita: str = Form(...),   # Hora seleccionada en el formulario
     db: Session = Depends(get_db)
 ):
+    if not access_token:
+        return RedirectResponse("/", status_code=302)
     try:
-        if not access_token:
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user:
             return RedirectResponse("/", status_code=302)
-
-        user_data = decode_token(access_token) 
-        user = get_user(user_data["username"], db) 
-
-        if not user or user.rol != 0:  
-            return RedirectResponse("/", status_code=302)
-        
+        id_paciente = user.id_usuario 
+        medico = db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
+        if not medico:
+            return {"error": "El médico seleccionado no existe."}
+        if "T" in hora_cita:
+            hora_cita = hora_cita.split("T")[1]
+        cita_str = f"{fecha_cita}T{hora_cita}:00"
+        print(f"Fecha y hora combinadas: {cita_str}")
+        cita_existente = db.query(CitaMedica).filter(CitaMedica.fecha_cita == cita_str).first()
+        if cita_existente:
+            return {"error": "La hora seleccionada ya está ocupada."}
         nueva_cita = CitaMedica(
-            id_usuario=user.id_usuario, 
-            id_medico=id_medico, 
-            fecha_cita=datetime.strptime(fecha_cita, "%Y-%m-%dT%H:%M"),
-            confirm_cita=False
+            id_medico=id_usuario,
+            id_usuario=id_paciente,
+            fecha_cita=cita_str
         )
         db.add(nueva_cita)
         db.commit()
-        return RedirectResponse(f"/users/details/{id_usuario}", status_code=302)
+        return RedirectResponse(f"/users/agendarCita/{id_usuario}", status_code=302)
+
     except Exception as e:
-        print(f"Error al agendar cita: {e}")
+        print(f"Error: {e}")
         return RedirectResponse("/", status_code=302)
+
+
+
     
 @router.get("/users/misCitas", response_class=HTMLResponse)
 def mis_citas(
