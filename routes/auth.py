@@ -8,7 +8,6 @@ from database.models import Usuario
 
 router=APIRouter()
 
-# Ruta para iniciar sesión
 @router.post("/users/login")
 def login(username: Annotated[str, Form()], password: Annotated[str, Form()], db: Session = Depends(get_db)):
     user_data = get_user(username, db)
@@ -25,7 +24,6 @@ def login(username: Annotated[str, Form()], password: Annotated[str, Form()], db
     token = create_token({"username": user_data.email})
     return RedirectResponse("/users/dashboard", status_code=302, headers={"set-cookie": f"access_token={token}; Max-Age={TOKEN_SECONDS_EXP}"})
 
-# Ruta para cerrar sesión
 @router.post("/users/logout")
 def logout():
     return RedirectResponse("/", status_code=302, headers={

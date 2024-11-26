@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receta Médica</title>
+</head>
+<body>
+    <h1>Receta Médica</h1>
+    {% if receta %}
+    <div>
+        <p><strong>Médico:</strong> {{ receta.medico.nombre }}</p>
+        <p><strong>Fecha de emisión:</strong> {{ receta.fecha_cita }}</p>
+        <p><strong>Indicaciones:</strong> {{ receta.anotaciones_receta_paciente }}</p>
+        <p><strong>Medicamentos:</strong> {{ receta.medicamentos }}</p>
+    </div>
+    {% else %}
+    <h2>No se encontró una receta asociada a esta cita.</h2>
+    {% endif %}
+</body>
+</html>
+

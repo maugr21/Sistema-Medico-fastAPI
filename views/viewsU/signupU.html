@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Registro de Paciente</title>
+    <script>
+        function showSuccessAlert(event) {
+            alert("Registrado exitosamente, gracias");
+        }
+    </script>
+</head>
+<body>
+    <h1>Registro de Paciente</h1>
+    <form action="/register-patient" method="post" onsubmit="showSuccessAlert(event)">
+        <input type="text" name="nombre" placeholder="Nombre" required />
+        <input type="text" name="apellido" placeholder="Apellido" required />
+        <input type="email" name="email" placeholder="Correo" required />
+        <input type="date" name="fecha_nacimiento" required />
+        <input type="password" name="password" placeholder="Contraseña" required />
+        <button type="submit">Registrar</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Receta</title>
+</head>
+<body>
+    <h1>Crear Receta</h1>
+    <form action="/users/crear-receta/{{ cita.id_cita }}" method="POST">
+        <label>Paciente: {{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</label><br>
+        <label>Fecha de la cita: {{ cita.fecha_cita }}</label><br>
+        <label for="anotaciones_receta_paciente">Anotaciones:</label><br>
+        <textarea name="anotaciones_receta_paciente" id="anotaciones_receta_paciente" rows="5" cols="40"></textarea><br><br>
+        <button type="submit">Guardar Receta</button>
+    </form>
+</body>
+</html>

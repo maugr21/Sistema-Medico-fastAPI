@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expediente del Paciente</title>
+</head>
+<body>
+    <h1>Expediente del Paciente</h1>
+
+    <!-- Lista de anotaciones -->
+    <ul>
+        {% for anotacion in anotaciones %}
+        <li>
+            <p>{{ anotacion.anotaciones_nuevas_paciente }}</p>
+
+            <!-- Botón para eliminar anotación -->
+           <!-- Botón para eliminar anotación -->
+<button onclick="eliminarAnotacion('{{ anotacion.id_expediente }}')">Eliminar</button>
+
+<script>
+    async function eliminarAnotacion(id_expediente) {
+        const confirmacion = confirm("¿Estás seguro de que deseas eliminar esta anotación?");
+        if (!confirmacion) return;
+
+        try {
+            const response = await fetch(`/users/eliminar-expediente/${id_expediente}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                alert("Anotación eliminada exitosamente");
+                location.reload(); // Recarga la página para reflejar los cambios
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.detail}`);
+            }
+        } catch (err) {
+            alert("Error al eliminar la anotación");
+            console.error(err);
+        }
+    }
+</script>
+
+
+            <!-- Botón para redirigir a la vista de actualización -->
+            <a href="/users/actualizar-anotacion/{{ anotacion.id_expediente }}">Actualizar</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Formulario para agregar nueva anotación -->
+    <h2>Agregar Nueva Anotación</h2>
+    <form method="post" action="/users/guardar-expediente/{{ paciente.id_usuario }}">
+        <textarea name="anotaciones_nuevas_paciente" placeholder="Escribe una nueva anotación"></textarea>
+        <input type="datetime-local" name="fecha_cita" required>
+        <button type="submit">Agregar</button>
+    </form>
+    
+</body>
+</html>
+
+

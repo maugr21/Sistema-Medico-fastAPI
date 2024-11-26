@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expediente Clínico</title>
+</head>
+<body>
+    <h1>Expediente Clínico</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Anotaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for anotacion in anotaciones %}
+            <tr>
+                <td>{{ anotacion.fecha_cita }}</td>
+                <td>{{ anotacion.anotaciones_nuevas_paciente }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/users/dashboard-user">Volver al Dashboard</a>
+</body>
+</html>
