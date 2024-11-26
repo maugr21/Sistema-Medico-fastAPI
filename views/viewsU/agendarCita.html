@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita</title>
-</head>
+</head> <script>
+    function showSuccessAlert(event) {
+        alert("Cita registrada exitosamente");
+    }
+</script>
 <body>
     <h1>Agendar Cita</h1>
-    <form action="/users/agendarCita/{{ id_usuario }}" method="post">
-        <label for="id_medico">Selecciona Médico:</label>
-        <select name="id_medico" id="id_medico" required>
-            {% for medico in medicos %}
-            <option value="{{ medico.id_usuario }}">{{ medico.nombre }}</option>
-            {% endfor %}
-        </select>
+    <form action="/users/agendarCita/{{ id_usuario }}" method="post" onsubmit="showSuccessAlert()">
+        <label for="medico">Médico Seleccionado:</label>
+        <input type="text" id="medico" value="{{ medico.nombre }}" readonly />
 
         <label for="fecha_cita">Fecha y Hora:</label>
         <input type="datetime-local" name="fecha_cita" id="fecha_cita" required>
-
+        <input type="hidden" name="id_medico" value="{{ medico.id_usuario }}">
         <button type="submit">Agendar</button>
     </form>
     <a href="/users/details/{{ id_usuario }}">Cancelar</a>
 </body>
 </html>
+
+

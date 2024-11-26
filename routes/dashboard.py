@@ -1,9 +1,9 @@
 from datetime import datetime
-from fastapi import APIRouter, Form, Request, Cookie, Depends
+from fastapi import APIRouter, Form, HTTPException, Request, Cookie, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
-from database.models import Usuario, CitaMedica
+from sqlalchemy.orm import Session, joinedload
+from database.models import ExpClinicoPaciente, RecMedicaPaciente, Usuario, CitaMedica
 from utils.security import decode_token, get_user
 from database.database import get_db
 
@@ -70,21 +70,27 @@ def user_details(id_usuario: int, request: Request, access_token: str | None = C
 @router.get("/users/agendarCita/{id_usuario}", response_class=HTMLResponse)
 def agendarCitaForm(id_usuario: int, request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
     if not access_token:
-        return RedirectResponse("/",status_code=302)
+        return RedirectResponse("/", status_code=302)
     
     try:
-        user_data=decode_token(access_token)
-        user= get_user(user_data["username"], db)
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
         
         if not user:
             return RedirectResponse("/", status_code=302)
 
-        medicos= db.query(Usuario).filter(Usuario.rol == 1).all()
-        
-        return templates.TemplateResponse("viewsU/AgendarCita.html",{"request": request, "id_usuario":id_usuario, "medicos":medicos})
+        # Obtener el médico seleccionado por id
+        medico = db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
+
+        return templates.TemplateResponse("viewsU/AgendarCita.html", {
+            "request": request, 
+            "id_usuario": id_usuario, 
+            "medico": medico
+        })
     except Exception as e: 
         print(f"Error: {e}")
         return RedirectResponse("/", status_code=302)
+
     
 
 @router.post("/users/agendarCita/{id_usuario}", response_class=RedirectResponse)
@@ -137,7 +143,6 @@ def mis_citas(
             .filter(CitaMedica.id_usuario == user.id_usuario)
             .all()
         )
-
         return templates.TemplateResponse(
             "viewsU/citas.html", {"request": request, "user": user, "citas": citas}
         )
@@ -230,6 +235,72 @@ def editar_cita(
         print(f"Error al editar cita: {e}")
         return RedirectResponse("/users/misCitas", status_code=302)
 
+@router.get("/users/ver-expediente", response_class=HTMLResponse)
+def ver_expediente_usuario(
+    request: Request,
+    access_token: str | None = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not access_token:
+        raise HTTPException(status_code=401, detail="No autorizado")
+
+    try:
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user or user.rol != 0:  # rol = 0 para usuarios regulares
+            raise HTTPException(status_code=403, detail="Acceso denegado")
+
+        # Obtener anotaciones del expediente clínico
+        anotaciones = db.query(ExpClinicoPaciente).filter(ExpClinicoPaciente.id_usuario == user.id_usuario).all()
+
+        return templates.TemplateResponse(
+            "viewsU/expediente.html",
+            {"request": request, "anotaciones": anotaciones, "user": user}
+        )
+    except Exception as e:
+        print(f"Error al obtener el expediente del usuario: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+@router.get("/users/ver-receta/{id_cita/{id_receta}}", response_class=HTMLResponse)
+def ver_receta_usuario(
+    id_cita: int,
+    id_receta:int,
+    request: Request,
+    access_token: str | None = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not access_token:
+        raise HTTPException(status_code=401, detail="No autorizado")
+
+    try:
+        # Validar usuario autenticado
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user or user.rol != 0:
+            raise HTTPException(status_code=403, detail="Acceso denegado")
+
+        # Obtener la receta asociada a la cita
+        receta = db.query(RecMedicaPaciente).filter(
+            RecMedicaPaciente.id_receta == id_receta,
+            RecMedicaPaciente.id_cita == id_cita,
+            RecMedicaPaciente.id_usuario == user.id_usuario
+        ).first()
+
+        # Si no hay receta, retornar mensaje
+        if not receta:
+            return HTMLResponse("<h1>No se encontró una receta para esta cita</h1>")
+
+        # Renderizar receta
+        return templates.TemplateResponse(
+            "viewsU/receta.html",
+            {"request": request, "receta": receta}
+        )
+    except Exception as e:
+        print(f"Error al obtener la receta: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+
+
     
-
-

@@ -76,8 +76,6 @@ def crear_receta(
         
         user_data=decode_token(access_token)
         user=get_user(user_data["username"],db)
-        file_path = f"recetas/receta_{id_cita}.pdf"
-
         
         if not user or user.rol != 1:
             return RedirectResponse("/", status_code=302)
@@ -86,9 +84,11 @@ def crear_receta(
         if not cita:
             return RedirectResponse("/users/dashboard-doc", status_code=302)
         
-        nueva_receta=RecMedicaPaciente(
+        # Crear la receta y usar id_cita como llave foránea
+        nueva_receta = RecMedicaPaciente(
             id_usuario=cita.id_usuario,
             id_medico=user.id_usuario,
+            id_cita=id_cita,  # Usando el id_cita como llave foránea
             anotaciones_receta_paciente=anotaciones_receta_paciente,
             fecha_cita=cita.fecha_cita
         )
@@ -99,6 +99,7 @@ def crear_receta(
     except Exception as e:
         print(f"Error al crear la receta: {e}")
         return RedirectResponse("/", status_code=302)
+
     
 @router.get("/users/mis-pacientes", response_class=HTMLResponse)
 def mis_pacientes(
@@ -159,6 +160,7 @@ def actualizar_receta(
         print(f"Error al actualizar la receta: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.post("/users/eliminar-receta/{id_receta}", response_class=JSONResponse)
 @router.delete("/users/eliminar-receta/{id_receta}", response_class=JSONResponse)  # También puedes usar DELETE directamente
 def eliminar_receta(
@@ -182,10 +184,11 @@ def eliminar_receta(
         db.delete(receta)
         db.commit()
 
-        return RedirectResponse("/users/dashboard-doc", status_code=200)
+        return JSONResponse(content={"message": "Receta eliminada exitosamente"}, status_code=200)
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.get("/users/actualizar-receta/{id_receta}", response_class=HTMLResponse)
@@ -367,6 +370,66 @@ def actualizar_anotacion(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/users/ver-expediente", response_class=HTMLResponse)
+def ver_expediente_usuario(
+    request: Request,
+    access_token: str | None = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not access_token:
+        raise HTTPException(status_code=401, detail="No autorizado")
+
+    try:
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user or user.rol != 0:  # rol = 0 para usuarios regulares
+            raise HTTPException(status_code=403, detail="Acceso denegado")
+
+        # Obtener anotaciones del expediente clínico
+        anotaciones = db.query(ExpClinicoPaciente).filter(ExpClinicoPaciente.id_usuario == user.id_usuario).all()
+
+        return templates.TemplateResponse(
+            "viewsU/expediente.html",
+            {"request": request, "anotaciones": anotaciones, "user": user}
+        )
+    except Exception as e:
+        print(f"Error al obtener el expediente del usuario: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+@router.get("/users/ver-receta/{id_cita}", response_class=HTMLResponse)
+def ver_receta_usuario(
+    id_cita: int,
+    request: Request,
+    access_token: str | None = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not access_token:
+        raise HTTPException(status_code=401, detail="No autorizado")
+
+    try:
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user or user.rol != 0:  # rol = 0 para usuarios regulares
+            raise HTTPException(status_code=403, detail="Acceso denegado")
+
+        receta = db.query(RecMedicaPaciente).filter(
+            RecMedicaPaciente.id_usuario == user.id_usuario,
+            RecMedicaPaciente.id_cita == id_cita
+        ).first()
+
+        if not receta:
+            raise HTTPException(status_code=404, detail="Receta no encontrada")
+
+        return templates.TemplateResponse(
+            "viewsU/receta.html",
+            {"request": request, "receta": receta, "user": user}
+        )
+    except Exception as e:
+        print(f"Error al obtener la receta: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
 
 
     

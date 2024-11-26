@@ -1,38 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Citas</title>
-</head>
-<body>
-    <h1>Mis Citas Agendadas</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Fecha y Hora</th>
-                <th>Médico</th>
-                <th>Confirmación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cita in citas %}
-            <tr>
-                <td>{{ cita.fecha_cita }}</td>
-                <td>{{ cita.id_medico }}</td>
-                <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
-                <td>
-                    <a href="/users/editarCita/{{ cita.id_cita }}">Editar</a> |
-                    <form action="/users/eliminarCita/{{ cita.id_cita }}" method="post" style="display:inline;">
-                        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="/users/dashboard-user">Volver al Dashboard</a>
-</body>
-</html>
+<tbody>
+    {% for cita in citas %}
+    <tr>
+        <td>{{ cita.fecha_cita }}</td>
+        <td>{{ cita.medico.nombre }} {{ cita.medico.apellido }}</td>
+        <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
+        <td>
+            <a href="/users/editarCita/{{ cita.id_cita }}">Editar</a> |
+            <form action="/users/eliminarCita/{{ cita.id_cita }}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</button>
+            </form> |
+            <a href="/users/ver-receta/{{ cita.id_cita }}">Ver Receta</a>
+            <span>Sin receta</span>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
 

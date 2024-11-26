@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Registro de Doctor</title>
+    <script>
+        function showSuccessAlert(event) {
+            // Mostrar el mensaje de éxito
+            alert("Registrado exitosamente, gracias");
+
+            // Continuar con el envío del formulario
+        }
+    </script>
+</head>
+<body>
+    <h1>Registro de Doctor</h1>
+    <form action="/register-doctor" method="post" onsubmit="showSuccessAlert(event)">
+        <input type="text" name="nombre" placeholder="Nombre" required />
+        <input type="text" name="apellido" placeholder="Apellido" required />
+        <input type="email" name="email" placeholder="Correo" required />
+        <input type="date" name="fecha_nacimiento" required />
+        <input type="password" name="password" placeholder="Contraseña" required />
+        <input type="text" name="cedula_profesional" placeholder="Cédula Profesional" required />
+
+        <label for="especialidad">Especialidad:</label>
+        <select name="especialidad" id="especialidad" required>
+            <option value="" disabled selected>Seleccione una especialidad</option>
+            <option value="Cardiología">Cardiología</option>
+            <option value="Pediatría">Pediatría</option>
+            <option value="Dermatología">Dermatología</option>
+            <option value="Neurología">Neurología</option>
+            <option value="Ginecología">Ginecología</option>
+            <option value="Oncología">Oncología</option>
+            <option value="Psiquiatría">Psiquiatría</option>
+            <option value="Traumatología">Traumatología</option>
+            <option value="Medicina General">Medicina General</option>
+        </select>
+
+        <button type="submit">Registrar</button>
+    </form>
+</body>
+</html>
+
