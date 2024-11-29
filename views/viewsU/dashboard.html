@@ -30,9 +30,14 @@
             color: #008CBA;
             text-decoration: none;
             font-size: 18px;
+            padding: 10px 20px;
+            border: 2px solid #008CBA;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
         }
         .nav-links a:hover {
-            text-decoration: underline;
+            background-color: #008CBA;
+            color: white;
         }
         form {
             max-width: 500px;
@@ -111,15 +116,115 @@
         .logout-form input[type="submit"]:hover {
             background-color: #c62828;
         }
+        /* Estilos para el Header */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        nav .logo {
+            display: flex;
+            align-items: center;
+        }
+        nav .logo img {
+            height: 40px;
+            width: 40px;
+            margin-right: 0.75rem;
+        }
+        nav .logo span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a202c; /* text-primary */
+        }
+        nav .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center; /* Align buttons with the text */
+        }
+        nav .nav-links a {
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: 2px solid #008CBA;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav .nav-links a:hover {
+            background-color: #008CBA;
+            color: white;
+        }
+        /* Estilos para el Footer */
+        footer {
+            background-color: #2d3748; /* bg-gray-800 */
+            color: #fff;
+            padding: 2rem 1.5rem;
+        }
+        footer .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        footer .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 1.5rem;
+        }
+        footer h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        footer p, footer a {
+            color: #a0aec0; /* text-gray-400 */
+            font-size: 0.875rem;
+        }
+        footer a:hover {
+            color: #fff;
+        }
+        footer .footer-bottom {
+            border-top: 1px solid #4a5568; /* border-gray-700 */
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #a0aec0; /* text-gray-400 */
+        }
+        footer .social-icons a {
+            font-size: 1.25rem;
+            transition: color 0.3s;
+        }
+        footer .social-icons a:hover {
+            color: #fff;
+        }
     </style>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/logo.png" alt="Logo de MediCare">
+                <span>MediCare</span>
+            </div>
+            <div class="nav-links">
+                <a href="/users/misCitas">Mis Citas</a>
+                <a href="/users/ver-expediente">Mi Expediente Clínico</a>
+            </div>
+        </nav>
+    </header>
+
     <div id="dashboard-container">
         <h1>Dashboard Usuario</h1>
-        <div class="nav-links">
-            <a href="/users/misCitas">Mis Citas</a>
-            <a href="/users/ver-expediente">Mi Expediente Clínico</a>
-        </div>
 
         <!-- Formulario de búsqueda por especialidad -->
         <form action="/users/dashboard-user" method="get">
@@ -143,5 +248,26 @@
             </form>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <!-- MediCare Info -->
+            <div class="footer-section">
+                <h3>MediCare</h3>
+                <p>Soluciones modernas para la gestión de atención médica.</p>
+            </div>
+            <!-- Contáctanos -->
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <p>1234 Avenida Salud, Ciudad Médica, MC 56789</p>
+                <p>info@medicare.com</p>
+            </div>
+        </div>
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2023 MediCare. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 </body>
 </html>

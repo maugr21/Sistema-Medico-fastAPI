@@ -4,8 +4,8 @@ from sqlalchemy.orm import sessionmaker
 
 
 #Configuración de la URL de la base de datos
-#URL="mysql+pymysql://FastApi:root@localhost/sistema_medico"
-URL="mysql+pymysql://root:admin@localhost/SistemaClinico"
+URL="mysql+pymysql://FastApi:root@localhost/sistema_medico"
+#URL="mysql+pymysql://root:admin@localhost/SistemaClinico"
 
 
 #Motor de Conexión

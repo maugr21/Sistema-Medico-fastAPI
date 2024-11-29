@@ -3,6 +3,7 @@
 <head>
     <title>Registro de Paciente - MediCare</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,9 +11,8 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Altura de la pantalla completa */
+            flex-direction: column;
+            min-height: 100vh;
         }
         #register-container {
             background-color: #fff;
@@ -22,6 +22,7 @@
             text-align: center;
             width: 100%;
             max-width: 400px;
+            margin: 50px auto; /* Add margin to separate from header and footer */
         }
         h1 {
             color: #333;
@@ -55,6 +56,74 @@
         button[type="submit"]:hover {
             background-color: #005f73;
         }
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        nav .logo {
+            display: flex;
+            align-items: center;
+        }
+        nav .logo img {
+            height: 40px;
+            width: 40px;
+            margin-right: 0.75rem;
+        }
+        nav .logo span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a202c; /* text-primary */
+        }
+        footer {
+            background-color: #2d3748; /* bg-gray-800 */
+            color: #fff;
+            padding: 2rem 1.5rem;
+            margin-top: auto;
+        }
+        footer .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        footer .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 1.5rem;
+        }
+        footer h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        footer p, footer a {
+            color: #a0aec0; /* text-gray-400 */
+            font-size: 0.875rem;
+        }
+        footer a:hover {
+            color: #fff;
+        }
+        footer .footer-bottom {
+            border-top: 1px solid #4a5568; /* border-gray-700 */
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #a0aec0; /* text-gray-400 */
+        }
+        footer .social-icons a {
+            font-size: 1.25rem;
+            transition: color 0.3s;
+        }
+        footer .social-icons a:hover {
+            color: #fff;
+        }
     </style>
     <script>
         function showSuccessAlert(event) {
@@ -71,6 +140,16 @@
     </script>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/logo.png" alt="Logo de MediCare">
+                <span>MediCare</span>
+            </div>
+        </nav>
+    </header>
+
     <div id="register-container">
         <h1>Registro de Paciente</h1>
         <form action="/register-patient" method="post" onsubmit="showSuccessAlert(event)">
@@ -82,5 +161,26 @@
             <button type="submit">Registrar</button>
         </form>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <!-- MediCare Info -->
+            <div class="footer-section">
+                <h3>MediCare</h3>
+                <p>Soluciones modernas para la gestión de atención médica.</p>
+            </div>
+            <!-- Contáctanos -->
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <p>1234 Avenida Salud, Ciudad Médica, MC 56789</p>
+                <p>info@medicare.com</p>
+            </div>
+        </div>
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2023 MediCare. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -3,38 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Doctor</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #e6f2ff;
             margin: 0;
             padding: 0;
-            text-align: center;
         }
         #dashboard-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 50px auto;
             padding: 20px;
         }
         h1 {
             color: #333;
-            margin-bottom: 30px;
-        }
-        .nav-links a {
-            display: inline-block;
-            margin: 10px 15px;
-            padding: 12px 25px;
-            background-color: #008CBA;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .nav-links a:hover {
-            background-color: #005f73;
+            text-align: center;
+            margin-bottom: 40px;
         }
         .logout-form {
-            margin-top: 20px;
+            margin-left: auto;
         }
         .logout-form input[type="submit"] {
             background-color: #f44336;
@@ -48,20 +36,322 @@
         .logout-form input[type="submit"]:hover {
             background-color: #c62828;
         }
+        /* Estilos para las secciones */
+        .section {
+            margin-bottom: 60px;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #008CBA;
+            padding-bottom: 10px;
+        }
+        /* Estilos para la tabla de pacientes */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #008CBA;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        /* Estilos para botones */
+        a.button, button {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #008CBA;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        a.button:hover, button:hover {
+            background-color: #005f73;
+        }
+        /* Estilos para acciones en la tabla de citas */
+        .crear-receta-btn {
+            background-color: #4CAF50;
+        }
+        .ver-receta-btn {
+            background-color: #008CBA;
+        }
+        .actualizar-receta-btn {
+            background-color: #FFA500;
+        }
+        .eliminar-receta-btn {
+            background-color: #f44336;
+        }
+        .crear-receta-btn:hover {
+            background-color: #388E3C;
+        }
+        .actualizar-receta-btn:hover {
+            background-color: #FF8C00;
+        }
+        .eliminar-receta-btn:hover {
+            background-color: #c62828;
+        }
+        /* Estilos para mensajes vacíos */
+        .empty-message {
+            text-align: center;
+            color: #555;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        /* Footer */
+        footer {
+            background-color: #2d3748; /* bg-gray-800 */
+            color: #fff;
+            padding: 2rem 1.5rem;
+        }
+        footer .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        footer .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 1.5rem;
+        }
+        footer h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        footer p, footer a {
+            color: #a0aec0; /* text-gray-400 */
+            font-size: 0.875rem;
+        }
+        footer a:hover {
+            color: #fff;
+        }
+        footer .footer-bottom {
+            border-top: 1px solid #4a5568; /* border-gray-700 */
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #a0aec0; /* text-gray-400 */
+        }
+        footer .social-icons a {
+            font-size: 1.25rem;
+            transition: color 0.3s;
+        }
+        footer .social-icons a:hover {
+            color: #fff;
+        }
+        /* Header */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between; /* Espacio entre logo y botón de cerrar sesión */
+            align-items: center;
+        }
+        nav .logo {
+            display: flex;
+            align-items: center;
+        }
+        nav .logo img {
+            height: 40px;
+            width: 40px;
+            margin-right: 0.75rem;
+        }
+        nav .logo span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a202c; /* text-primary */
+        }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="images/logo.png" alt="Logo de MediCare">
+                <span>MediCare</span>
+            </div>
+            <div class="logout-form">
+                <form action="/users/logout" method="post">
+                    <input type="submit" value="Cerrar Sesión">
+                </form>
+            </div>
+        </nav>
+    </header>
     <div id="dashboard-container">
         <h1>Dashboard del Doctor</h1>
-        <div class="nav-links">
-            <a href="/users/mis-pacientes">Ver Pacientes Clínicos</a>
-            <a href="/users/mis-citas">Mis Citas</a>
+
+        <!-- Sección de Pacientes -->
+        <div class="section">
+            <h2>Mis Pacientes</h2>
+            {% if pacientes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paciente in pacientes %}
+                    <tr>
+                        <td>{{ paciente.nombre }} {{ paciente.apellido }}</td>
+                        <td>{{ paciente.email }}</td>
+                        <td>
+                            <a href="/users/ver-expediente/{{ paciente.id_usuario }}" class="button">Ver Expediente</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">No tienes pacientes asignados actualmente.</p>
+            {% endif %}
         </div>
-        <div class="logout-form">
-            <form action="/users/logout" method="post">
-                <input type="submit" value="Cerrar Sesión">
-            </form>
+
+        <!-- Sección de Citas -->
+        <div class="section">
+            <h2>Mis Citas</h2>
+            {% if citas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Fecha y hora</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                        <th>Gestión de Recetas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cita in citas %}
+                    <tr>
+                        <td>{{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</td>
+                        <td>{{ cita.fecha_cita }}</td>
+                        <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
+                        <td>
+                            {% if cita.receta %}
+                            <a href="/users/ver-receta/{{ cita.receta.id_receta }}" class="button ver-receta-btn">Ver Receta</a>
+                            {% else %}
+                            <a href="/users/crear-receta/{{ cita.id_cita }}" class="button crear-receta-btn">Crear Receta</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if cita.receta %}
+                            <a href="/users/actualizar-receta/{{ cita.receta.id_receta }}" class="button actualizar-receta-btn">Actualizar</a>
+                            <button class="eliminar-receta-btn" data-id="{{ cita.receta.id_receta }}">Eliminar</button>
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">No tienes citas programadas actualmente.</p>
+            {% endif %}
         </div>
     </div>
+
+    <script>
+        // SweetAlert para eliminar recetas
+        document.querySelectorAll('.eliminar-receta-btn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault(); // Evita el envío del formulario predeterminado
+                const recetaId = button.getAttribute('data-id');
+
+                const confirmation = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                });
+
+                if (confirmation.isConfirmed) {
+                    try {
+                        const response = await fetch(`/users/eliminar-receta/${recetaId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ _method: 'DELETE' }) // Simula método DELETE
+                        });
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Receta eliminada',
+                                text: 'La receta ha sido eliminada con éxito.',
+                            }).then(() => location.reload()); // Recargar la página
+                        } else if (response.status === 404) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Receta no encontrada',
+                                text: 'La receta que intentas eliminar no existe.',
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un problema al intentar eliminar la receta.',
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error al eliminar la receta:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error interno',
+                            text: 'No se pudo procesar tu solicitud. Intenta nuevamente.',
+                        });
+                    }
+                }
+            });
+        });
+    </script>
 </body>
+<!-- Footer -->
+<footer>
+    <div class="footer-container">
+        <!-- MediCare Info -->
+        <div class="footer-section">
+            <h3>MediCare</h3>
+            <p>Soluciones modernas para la gestión de atención médica.</p>
+        </div>
+        <!-- Contáctanos -->
+        <div class="footer-section">
+            <h3>Contáctanos</h3>
+            <p>1234 Avenida Salud, Ciudad Médica, MC 56789</p>
+            <p>info@medicare.com</p>
+        </div>
+    </div>
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+        <p>&copy; 2023 MediCare. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
 </html>
