@@ -3,31 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard Usuario - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff; /* Fondo azul claro */
+            margin: 0;
+            padding: 0;
+        }
+        #dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nav-links a {
+            margin: 0 15px;
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto 40px;
+            display: flex;
+            justify-content: center;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #005f73;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            width: 300px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .card p {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 16px;
+        }
+        .card button {
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .card button:hover {
+            background-color: #005f73;
+        }
+        .logout-form {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .logout-form input[type="submit"] {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .logout-form input[type="submit"]:hover {
+            background-color: #c62828;
+        }
+    </style>
 </head>
 <body>
-    <h1>Dashboard Usuario</h1>
-    <a href="/users/misCitas">Mis Citas</a>
-    <a href="/users/ver-expediente">Mi Expediente Clínico</a>
-
-    <!-- Formulario de búsqueda por especialidad -->
-    <form action="/users/dashboard-user" method="get">
-        <input type="text" name="especialidad" placeholder="Buscar por especialidad">
-        <input type="submit" value="Buscar">
-    </form>
-
-    <div class="card-container">
-        {% for user in users %}
-        <div class="card">
-            <h3>{{ user.nombre }}</h3>
-            <p>Especialidad: {{ user.especialidad }}</p>
-            <button onclick="window.location.href='/users/details/{{ user.id_usuario }}'">Ver información</button>
+    <div id="dashboard-container">
+        <h1>Dashboard Usuario</h1>
+        <div class="nav-links">
+            <a href="/users/misCitas">Mis Citas</a>
+            <a href="/users/ver-expediente">Mi Expediente Clínico</a>
         </div>
-        {% endfor %}
-    </div>
 
-    <form action="/users/logout" method="post">
-        <input type="submit" value="logout">
-    </form>
+        <!-- Formulario de búsqueda por especialidad -->
+        <form action="/users/dashboard-user" method="get">
+            <input type="text" name="especialidad" placeholder="Buscar por especialidad">
+            <input type="submit" value="Buscar">
+        </form>
+
+        <div class="card-container">
+            {% for user in users %}
+            <div class="card">
+                <h3>{{ user.nombre }}</h3>
+                <p>Especialidad: {{ user.especialidad }}</p>
+                <button onclick="window.location.href='/users/details/{{ user.id_usuario }}'">Ver información</button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="logout-form">
+            <form action="/users/logout" method="post">
+                <input type="submit" value="Cerrar Sesión">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

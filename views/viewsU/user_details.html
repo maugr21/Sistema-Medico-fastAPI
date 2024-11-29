@@ -3,13 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información del Usuario</title>
+    <title>Información del Usuario - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #user-info-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+            margin: 15px 0;
+        }
+        a {
+            display: inline-block;
+            margin: 20px 10px 0;
+            background-color: #008CBA;
+            color: #fff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        a:hover {
+            background-color: #005f73;
+        }
+        .button-container {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Información de {{ user.nombre }}</h1>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Fecha de registro:</strong> {{ user.especialidad }}</p>
-    <a href="/users/agendarCita/{{user.id_usuario}}">Agendar Cita</a>
-    <a href="/users/dashboard-user">Volver al Dashboard</a>
+    <div id="user-info-container">
+        <h1>Información de {{ user.nombre }}</h1>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Fecha de registro:</strong> {{ user.especialidad }}</p>
+        <div class="button-container">
+            <a href="/users/agendarCita/{{user.id_usuario}}">Agendar Cita</a>
+            <a href="/users/dashboard-user">Volver al Dashboard</a>
+        </div>
+    </div>
 </body>
 </html>

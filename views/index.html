@@ -3,17 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - MediCare</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff; /* Fondo azul claro */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Altura de la pantalla completa */
+        }
+        #login-container {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        form {
+            width: 100%;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="submit"] {
+            width: calc(100% - 30px); /* Ensure all inputs have the same width */
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+        }
+        input[type="submit"] {
+            background-color: #008CBA; /* Azul MediCare */
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #005f73;
+        }
+        .register-text {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .register-text a {
+            color: #008CBA;
+            text-decoration: none;
+        }
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>LOGIN</h1>
-    <form id="login-form" action="/users/login" method="post">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" id="password" placeholder="password" required>
-        <input type="submit" value="Login">
-    </form>
-    Si no tienes una cuenta <a href="/select-role">Registrate aquí</a>
+    <div id="login-container">
+        <h1>Iniciar Sesión</h1>
+        <form id="login-form" action="/users/login" method="post">
+            <input type="text" name="username" placeholder="Usuario" required>
+            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+            <input type="submit" value="Login">
+        </form>
+        <div class="register-text">
+            Si no tienes una cuenta, <a href="/select-role">regístrate aquí</a>
+        </div>
+    </div>
 
     <script>
         document.getElementById('login-form').addEventListener('submit', async (event) => {

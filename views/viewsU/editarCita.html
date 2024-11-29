@@ -3,23 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Cita</title>
+    <title>Editar Cita - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #edit-cita-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        form {
+            width: 100%;
+        }
+        label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+        select, input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            margin-top: 30px;
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #005f73;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Editar Cita</h1>
-    <form action="/users/editarCita/{{ cita.id_cita }}" method="post">
-        <label for="id_medico">Seleccionar Médico:</label>
-        <select name="id_medico" id="id_medico">
-            {% for medico in medicos %}
-            <option value="{{ medico.id_usuario }}" {% if medico.id_usuario == cita.id_medico %} selected {% endif %}>{{ medico.nombre }} {{ medico.apellido }}</option>
-            {% endfor %}
-        </select>
+    <div id="edit-cita-container">
+        <h1>Editar Cita</h1>
+        <form action="/users/editarCita/{{ cita.id_cita }}" method="post">
+            <label for="id_medico">Seleccionar Médico:</label>
+            <select name="id_medico" id="id_medico">
+                {% for medico in medicos %}
+                <option value="{{ medico.id_usuario }}" {% if medico.id_usuario == cita.id_medico %} selected {% endif %}>{{ medico.nombre }} {{ medico.apellido }}</option>
+                {% endfor %}
+            </select>
 
-        <label for="fecha_cita">Fecha y Hora:</label>
-        <input type="datetime-local" name="fecha_cita" value="{{ cita.fecha_cita.strftime('%Y-%m-%dT%H:%M') }}" required>
+            <label for="fecha_cita">Fecha y Hora:</label>
+            <input type="datetime-local" name="fecha_cita" value="{{ cita.fecha_cita.strftime('%Y-%m-%dT%H:%M') }}" required>
 
-        <button type="submit">Actualizar Cita</button>
-    </form>
-    <a href="/users/misCitas">Volver a Mis Citas</a>
+            <button type="submit">Actualizar Cita</button>
+        </form>
+        <a href="/users/misCitas">Volver a Mis Citas</a>
+    </div>
 </body>
 </html>

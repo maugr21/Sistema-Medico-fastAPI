@@ -2,36 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendar Cita</title>
+    <title>Agendar Cita - MediCare</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff; /* Fondo azul claro */
+            margin: 0;
+            padding: 0;
+        }
+        #agendar-cita-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        form {
+            width: 100%;
+        }
+        label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 5px;
+            margin-top: 20px;
+        }
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="text"] {
+            background-color: #f2f2f2;
+        }
+        button[type="submit"] {
+            margin-top: 30px;
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #005f73;
+        }
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .cancel-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Agendar Cita</h1>
-    <form id="agendarCitaForm">
-        <label for="medico">Médico Seleccionado:</label>
-        <input type="text" id="medico" value="{{ medico.nombre }}" readonly />
+    <div id="agendar-cita-container">
+        <h1>Agendar Cita</h1>
+        <form id="agendarCitaForm">
+            <label for="medico">Médico Seleccionado:</label>
+            <input type="text" id="medico" value="{{ medico.nombre }}" readonly />
     
-        <label for="fecha_cita">Fecha:</label>
-        <input type="date" name="fecha_cita" id="fecha_cita" required />
+            <label for="fecha_cita">Fecha:</label>
+            <input type="date" name="fecha_cita" id="fecha_cita" required />
     
-        <label for="hora_cita">Hora:</label>
-        <select name="hora_cita" id="hora_cita" required>
-            {% for hora in available_hours %}
-                <option value="{{ hora }}">{{ hora[11:16] }}</option>
-            {% endfor %}
-        </select>
+            <label for="hora_cita">Hora:</label>
+            <select name="hora_cita" id="hora_cita" required>
+                {% for hora in available_hours %}
+                    <option value="{{ hora }}">{{ hora[11:16] }}</option>
+                {% endfor %}
+            </select>
     
-        <button type="submit">Agendar</button>
-    </form>
+            <button type="submit">Agendar</button>
+        </form>
     
-    <a href="/users/details/{{ id_usuario }}">Cancelar</a>
-    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <a href="/users/details/{{ id_usuario }}" class="cancel-link">Cancelar</a>
+    </div>
+
     <script>
         const form = document.getElementById('agendarCitaForm');
         form.addEventListener('submit', async (event) => {
             event.preventDefault(); // Evitar envío directo
-    
+
             const formData = new FormData(form);
             const fecha_cita = formData.get('fecha_cita');
             const hora_cita = formData.get('hora_cita');
@@ -76,7 +146,5 @@
             }
         });
     </script>
-    
-    <a href="/users/details/{{ id_usuario }}">Cancelar</a>
 </body>
-</html>
+</htm

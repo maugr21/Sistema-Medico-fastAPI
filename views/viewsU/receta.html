@@ -3,20 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receta Médica</title>
+    <title>Receta Médica - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #receta-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+            margin: 15px 0;
+        }
+        strong {
+            color: #000;
+        }
+    </style>
 </head>
 <body>
-    <h1>Receta Médica</h1>
-    {% if receta %}
-    <div>
-        <p><strong>Médico:</strong> {{ receta.medico.nombre }}</p>
-        <p><strong>Fecha de emisión:</strong> {{ receta.fecha_cita }}</p>
-        <p><strong>Indicaciones:</strong> {{ receta.anotaciones_receta_paciente }}</p>
-        <p><strong>Medicamentos:</strong> {{ receta.medicamentos }}</p>
+    <div id="receta-container">
+        <h1>Receta Médica</h1>
+        {% if receta %}
+        <div>
+            <p><strong>Médico:</strong> {{ receta.medico.nombre }}</p>
+            <p><strong>Fecha de emisión:</strong> {{ receta.fecha_cita }}</p>
+            <p><strong>Indicaciones:</strong> {{ receta.anotaciones_receta_paciente }}</p>
+            <p><strong>Medicamentos:</strong> {{ receta.medicamentos }}</p>
+        </div>
+        {% else %}
+        <h2>No se encontró una receta asociada a esta cita.</h2>
+        {% endif %}
     </div>
-    {% else %}
-    <h2>No se encontró una receta asociada a esta cita.</h2>
-    {% endif %}
 </body>
 </html>
-
