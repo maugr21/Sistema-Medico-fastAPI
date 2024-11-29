@@ -2,66 +2,179 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expediente del Paciente</title>
+    <title>Expediente del Paciente - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff; /* Fondo azul claro */
+            margin: 0;
+            padding: 0;
+        }
+        #expediente-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            position: relative;
+        }
+        li p {
+            margin: 0 0 10px 0;
+            color: #555;
+            font-size: 16px;
+        }
+        li .actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        li .actions button,
+        li .actions a {
+            margin-left: 5px;
+            padding: 6px 12px;
+            font-size: 14px;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        li .actions button {
+            background-color: #f44336; /* Rojo */
+        }
+        li .actions button:hover {
+            background-color: #c62828;
+        }
+        li .actions a {
+            background-color: #008CBA; /* Azul */
+        }
+        li .actions a:hover {
+            background-color: #005f73;
+        }
+        h2 {
+            color: #333;
+            margin-top: 40px;
+            text-align: center;
+        }
+        form {
+            margin-top: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            margin-top: 20px;
+            background-color: #4CAF50; /* Verde */
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #388E3C;
+        }
+    </style>
 </head>
 <body>
-    <h1>Expediente del Paciente</h1><a href="/users/mis-pacientes">Volver a ver a mis pacientes</a>
+    <div id="expediente-container">
+        <h1>Expediente del Paciente</h1>
+        <a href="/users/mis-pacientes" class="back-link">Volver a ver a mis pacientes</a>
 
-    <!-- Lista de anotaciones -->
-    <ul>
-        {% for anotacion in anotaciones %}
-        <li>
-            <p>{{ anotacion.anotaciones_nuevas_paciente }}</p>
+        <!-- Lista de anotaciones -->
+        <ul>
+            {% for anotacion in anotaciones %}
+            <li>
+                <p>{{ anotacion.anotaciones_nuevas_paciente }}</p>
+                <p><strong>Fecha:</strong> {{ anotacion.fecha_cita }}</p>
+                <div class="actions">
+                    <!-- Botón para redirigir a la vista de actualización -->
+                    <a href="/users/actualizar-anotacion/{{ anotacion.id_expediente }}">Actualizar</a>
+                    <!-- Botón para eliminar anotación -->
+                    <button onclick="eliminarAnotacion('{{ anotacion.id_expediente }}')">Eliminar</button>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
 
-            <!-- Botón para eliminar anotación -->
-           <!-- Botón para eliminar anotación -->
-<button onclick="eliminarAnotacion('{{ anotacion.id_expediente }}')">Eliminar</button>
+        <!-- Formulario para agregar nueva anotación -->
+        <h2>Agregar Nueva Anotación</h2>
+        <form method="post" action="/users/guardar-expediente/{{ paciente.id_usuario }}">
+            <textarea name="anotaciones_nuevas_paciente" placeholder="Escribe una nueva anotación" required></textarea>
+            <input type="datetime-local" name="fecha_cita" required>
+            <button type="submit">Agregar</button>
+        </form>
+    </div>
 
-<script>
-    async function eliminarAnotacion(id_expediente) {
-        const confirmacion = confirm("¿Estás seguro de que deseas eliminar esta anotación?");
-        if (!confirmacion) return;
+    <script>
+        async function eliminarAnotacion(id_expediente) {
+            const confirmacion = confirm("¿Estás seguro de que deseas eliminar esta anotación?");
+            if (!confirmacion) return;
 
-        try {
-            const response = await fetch(`/users/eliminar-expediente/${id_expediente}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            try {
+                const response = await fetch(`/users/eliminar-expediente/${id_expediente}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
 
-            if (response.ok) {
-                alert("Anotación eliminada exitosamente");
-                location.reload(); // Recarga la página para reflejar los cambios
-            } else {
-                const error = await response.json();
-                alert(`Error: ${error.detail}`);
+                if (response.ok) {
+                    alert("Anotación eliminada exitosamente");
+                    location.reload(); // Recarga la página para reflejar los cambios
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.detail}`);
+                }
+            } catch (err) {
+                alert("Error al eliminar la anotación");
+                console.error(err);
             }
-        } catch (err) {
-            alert("Error al eliminar la anotación");
-            console.error(err);
         }
-    }
-</script>
-
-
-            <!-- Botón para redirigir a la vista de actualización -->
-            <a href="/users/actualizar-anotacion/{{ anotacion.id_expediente }}">Actualizar</a>
-            <p>{{anotacion.fecha_cita}}</p>
-        </li>
-        {% endfor %}
-    </ul>
-
-    <!-- Formulario para agregar nueva anotación -->
-    <h2>Agregar Nueva Anotación</h2>
-    <form method="post" action="/users/guardar-expediente/{{ paciente.id_usuario }}">
-        <textarea name="anotaciones_nuevas_paciente" placeholder="Escribe una nueva anotación"></textarea>
-        <input type="datetime-local" name="fecha_cita" required>
-        <button type="submit">Agregar</button>
-    </form>
-    
+    </script>
 </body>
 </html>
-
-

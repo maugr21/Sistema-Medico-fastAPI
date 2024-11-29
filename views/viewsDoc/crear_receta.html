@@ -2,17 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Receta</title>
+    <title>Crear Receta - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #crear-receta-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        button[type="submit"] {
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #005f73;
+        }
+    </style>
 </head>
 <body>
-    <h1>Crear Receta</h1>
-    <form action="/users/crear-receta/{{ cita.id_cita }}" method="POST">
-        <label>Paciente: {{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</label><br>
-        <label>Fecha de la cita: {{ cita.fecha_cita }}</label><br>
-        <label for="anotaciones_receta_paciente">Anotaciones:</label><br>
-        <textarea name="anotaciones_receta_paciente" id="anotaciones_receta_paciente" rows="5" cols="40"></textarea><br><br>
-        <button type="submit">Guardar Receta</button>
-    </form>
+    <div id="crear-receta-container">
+        <h1>Crear Receta</h1>
+        <form action="/users/crear-receta/{{ cita.id_cita }}" method="POST">
+            <label><strong>Paciente:</strong> {{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</label>
+            <label><strong>Fecha de la cita:</strong> {{ cita.fecha_cita }}</label>
+            <label for="anotaciones_receta_paciente"><strong>Anotaciones:</strong></label>
+            <textarea name="anotaciones_receta_paciente" id="anotaciones_receta_paciente" rows="5" required></textarea>
+            <button type="submit">Guardar Receta</button>
+        </form>
+    </div>
 </body>
 </html>

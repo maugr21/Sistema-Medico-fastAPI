@@ -2,15 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Doctor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        #dashboard-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin: 10px 15px;
+            padding: 12px 25px;
+            background-color: #008CBA;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            background-color: #005f73;
+        }
+        .logout-form {
+            margin-top: 20px;
+        }
+        .logout-form input[type="submit"] {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .logout-form input[type="submit"]:hover {
+            background-color: #c62828;
+        }
+    </style>
 </head>
 <body>
-    <h1>Dashboard del Doctor</h1>
-    <form action="/users/logout" method="post">
-        <input type="submit" value="Cerrar sesión">
-    </form>
-    <a href="/users/mis-pacientes" class="button">Ver pacientes clínicos</a>
-    <a href="/users/mis-citas">MIS CITAS</a>
+    <div id="dashboard-container">
+        <h1>Dashboard del Doctor</h1>
+        <div class="nav-links">
+            <a href="/users/mis-pacientes">Ver Pacientes Clínicos</a>
+            <a href="/users/mis-citas">Mis Citas</a>
+        </div>
+        <div class="logout-form">
+            <form action="/users/logout" method="post">
+                <input type="submit" value="Cerrar Sesión">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

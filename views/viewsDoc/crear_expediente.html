@@ -2,18 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Expediente</title>
+    <title>Crear Expediente - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #crear-expediente-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            width: 100%;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #388E3C;
+        }
+    </style>
 </head>
 <body>
-    <h1>Crear Expediente Clínico</h1>
-    <h1>Crear Expediente para {{ paciente.nombre }}</h1>
-    <form method="post" action="/users/guardar-expediente/{{ paciente.id_usuario }}">
-        <textarea name="anotaciones_nuevas_paciente" placeholder="Escribe una nueva anotación"></textarea>
-        <input type="datetime-local" name="fecha_cita" required>
-        <button type="submit">Guardar</button>
-    </form>
-    
-    
+    <div id="crear-expediente-container">
+        <h1>Crear Expediente Clínico</h1>
+        <h2>Para {{ paciente.nombre }}</h2>
+        <form method="post" action="/users/guardar-expediente/{{ paciente.id_usuario }}">
+            <textarea name="anotaciones_nuevas_paciente" placeholder="Escribe una nueva anotación" required></textarea>
+            <input type="datetime-local" name="fecha_cita" required>
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
 </body>
 </html>

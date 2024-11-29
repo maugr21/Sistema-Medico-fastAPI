@@ -2,31 +2,90 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Pacientes</title>
+    <title>Mis Pacientes - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #pacientes-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #008CBA;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        a.button {
+            background-color: #008CBA;
+            color: #fff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        a.button:hover {
+            background-color: #005f73;
+        }
+    </style>
 </head>
 <body>
-    <h1>Lista de Pacientes</h1>
-    <a href="/users/dashboard-doc">Volver al dashboard</a>
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for paciente in pacientes %}
-            <tr>
-                <td>{{ paciente.nombre }}</td>
-                <td>{{ paciente.email }}</td>
-                <td>
-                    <a href="/users/ver-expediente/{{ paciente.id_usuario }}">Ver Expediente</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div id="pacientes-container">
+        <h1>Lista de Pacientes</h1>
+        <a href="/users/dashboard-doc" class="back-link">Volver al Dashboard</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paciente in pacientes %}
+                <tr>
+                    <td>{{ paciente.nombre }} {{ paciente.apellido }}</td>
+                    <td>{{ paciente.email }}</td>
+                    <td>
+                        <a href="/users/ver-expediente/{{ paciente.id_usuario }}" class="button">Ver Expediente</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

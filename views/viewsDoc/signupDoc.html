@@ -1,8 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Registro de Doctor</title>
+    <title>Registro de Doctor - MediCare</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff; /* Fondo azul claro */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Altura de la pantalla completa */
+        }
+        #register-container {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        form {
+            width: 100%;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        button[type="submit"] {
+            background-color: #008CBA; /* Azul MediCare */
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #005f73;
+        }
+    </style>
     <script>
         function showSuccessAlert(event) {
             event.preventDefault(); 
@@ -18,32 +77,32 @@
     </script>
 </head>
 <body>
-    <h1>Registro de Doctor</h1>
-    <form action="/register-doctor" method="post" onsubmit="showSuccessAlert(event)">
-        <input type="text" name="nombre" placeholder="Nombre" required />
-        <input type="text" name="apellido" placeholder="Apellido" required />
-        <input type="email" name="email" placeholder="Correo" required />
-        <input type="date" name="fecha_nacimiento" required />
-        <input type="password" name="password" placeholder="Contraseña" required />
-        <input type="text" name="cedula_profesional" placeholder="Cédula Profesional" required />
+    <div id="register-container">
+        <h1>Registro de Doctor</h1>
+        <form action="/register-doctor" method="post" onsubmit="showSuccessAlert(event)">
+            <input type="text" name="nombre" placeholder="Nombre" required />
+            <input type="text" name="apellido" placeholder="Apellido" required />
+            <input type="email" name="email" placeholder="Correo" required />
+            <input type="date" name="fecha_nacimiento" required />
+            <input type="password" name="password" placeholder="Contraseña" required />
+            <input type="text" name="cedula_profesional" placeholder="Cédula Profesional" required />
 
-        <label for="especialidad">Especialidad:</label>
-        <select name="especialidad" id="especialidad" required>
-            <option value="" disabled selected>Seleccione una especialidad</option>
-            <option value="Cardiología">Cardiología</option>
-            <option value="Pediatría">Pediatría</option>
-            <option value="Dermatología">Dermatología</option>
-            <option value="Neurología">Neurología</option>
-            <option value="Ginecología">Ginecología</option>
-            <option value="Oncología">Oncología</option>
-            <option value="Psiquiatría">Psiquiatría</option>
-            <option value="Traumatología">Traumatología</option>
-            <option value="Medicina General">Medicina General</option>
-        </select>
+            <label for="especialidad">Especialidad:</label>
+            <select name="especialidad" id="especialidad" required>
+                <option value="" disabled selected>Seleccione una especialidad</option>
+                <option value="Cardiología">Cardiología</option>
+                <option value="Pediatría">Pediatría</option>
+                <option value="Dermatología">Dermatología</option>
+                <option value="Neurología">Neurología</option>
+                <option value="Ginecología">Ginecología</option>
+                <option value="Oncología">Oncología</option>
+                <option value="Psiquiatría">Psiquiatría</option>
+                <option value="Traumatología">Traumatología</option>
+                <option value="Medicina General">Medicina General</option>
+            </select>
 
-        <button type="submit">Registrar</button>
-    </form>
+            <button type="submit">Registrar</button>
+        </form>
+    </div>
 </body>
 </html>
-
-

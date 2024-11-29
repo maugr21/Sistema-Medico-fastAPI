@@ -2,15 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receta Médica</title>
+    <title>Receta Médica - MediCare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff; /* Fondo azul claro */
+            margin: 0;
+            padding: 0;
+        }
+        #receta-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: calc(100% - 30px); 
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            background-color: #f9f9f9;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #008CBA;
+            color: #fff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #005f73;
+        }
+    </style>
 </head>
 <body>
-    <h1>Receta Médica</h1>
-    <label>Paciente: {{ receta.usuario.nombre }} {{ receta.usuario.apellido }}</label><br>
-    <label>Fecha de la cita: {{ receta.fecha_cita }}</label><br>
-    <label for="anotaciones_receta_paciente">Anotaciones:</label><br>
-    <textarea disabled name="anotaciones_receta_paciente" id="anotaciones_receta_paciente" rows="5" cols="40">{{ receta.anotaciones_receta_paciente }}</textarea><br><br>
-    <a href="/users/dashboard" class="button">Regresar al Dashboard</a>
+    <div id="receta-container">
+        <h1>Receta Médica</h1>
+        <label><strong>Paciente:</strong> {{ receta.usuario.nombre }} {{ receta.usuario.apellido }}</label>
+        <label><strong>Fecha de la cita:</strong> {{ receta.fecha_cita }}</label>
+        <label for="anotaciones_receta_paciente"><strong>Anotaciones:</strong></label>
+        <textarea disabled name="anotaciones_receta_paciente" id="anotaciones_receta_paciente" rows="5">{{ receta.anotaciones_receta_paciente }}</textarea>
+        <a href="/users/dashboard" class="button">Regresar al Dashboard</a>
+    </div>
 </body>
 </html>

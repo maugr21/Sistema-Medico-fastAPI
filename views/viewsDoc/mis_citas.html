@@ -2,50 +2,149 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIS CITAS</title>
+    <title>Mis Citas - MediCare</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+        }
+        #citas-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            margin: 0 10px;
+            color: #008CBA;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #008CBA;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        td a.button, td button {
+            margin: 0 5px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .crear-receta-btn {
+            background-color: #4CAF50;
+        }
+        .ver-receta-btn {
+            background-color: #008CBA;
+        }
+        .actualizar-receta-btn {
+            background-color: #FFA500;
+        }
+        .eliminar-receta-btn {
+            background-color: #f44336;
+        }
+        td a.button:hover, td button:hover {
+            opacity: 0.9;
+        }
+        .logout-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logout-form input[type="submit"] {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .logout-form input[type="submit"]:hover {
+            background-color: #c62828;
+        }
+    </style>
 </head>
 <body>
-    <h1>MIS CITAS</h1>
-    <form action="/users/logout" method="post">
-        <input type="submit" value="Cerrar sesión">
-    </form>
-    <a href="/users/mis-pacientes" class="button">Ver pacientes clínicos</a>
-    <h2>Mis Citas</h2>
-    <a href="/users/dashboard-doc">Volver al home</a>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Paciente</th>
-                <th>Fecha y hora</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cita in citas %}
-            <tr>
-                <td>{{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</td>
-                <td>{{ cita.fecha_cita }}</td>
-                <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
-                <td>
-                    {% if cita.receta %}
-                        <!-- Si ya existe una receta, muestra solo el botón de "Ver receta" -->
-                        <a href="/users/ver-receta/{{ cita.receta.id_receta }}" class="button">Ver Receta</a>
-                    {% else %}
-                        <!-- Si no existe receta, permite crear una nueva -->
-                        <a href="/users/crear-receta/{{ cita.id_cita }}" class="button">Crear Receta</a>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="/users/actualizar-receta/{{ cita.receta.id_receta }}" class="button">Actualizar</a> |
-                    <button class="eliminar-receta-btn" data-id="{{ cita.receta.id_receta }}">Eliminar</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div id="citas-container">
+        <h1>Mis Citas</h1>
+        <div class="nav-links">
+            <a href="/users/dashboard-doc">Volver al Dashboard</a>
+            <a href="/users/mis-pacientes" class="button">Ver Pacientes Clínicos</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Fecha y hora</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                    <th>Gestión de Recetas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cita in citas %}
+                <tr>
+                    <td>{{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</td>
+                    <td>{{ cita.fecha_cita }}</td>
+                    <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
+                    <td>
+                        {% if cita.receta %}
+                            <a href="/users/ver-receta/{{ cita.receta.id_receta }}" class="button ver-receta-btn">Ver Receta</a>
+                        {% else %}
+                            <a href="/users/crear-receta/{{ cita.id_cita }}" class="button crear-receta-btn">Crear Receta</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cita.receta %}
+                            <a href="/users/actualizar-receta/{{ cita.receta.id_receta }}" class="button actualizar-receta-btn">Actualizar</a>
+                            <button class="eliminar-receta-btn" data-id="{{ cita.receta.id_receta }}">Eliminar</button>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="logout-form">
+            <form action="/users/logout" method="post">
+                <input type="submit" value="Cerrar Sesión">
+            </form>
+        </div>
+    </div>
 
     <script>
         // SweetAlert para eliminar recetas
