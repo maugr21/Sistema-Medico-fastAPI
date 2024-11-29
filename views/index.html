@@ -70,8 +70,8 @@
     <div id="login-container">
         <h1>Iniciar Sesión</h1>
         <form id="login-form" action="/users/login" method="post">
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+            <input type="text" name="username" placeholder="correo" required>
+            <input type="password" name="password" id="password" placeholder="contraseña" required>
             <input type="submit" value="Login">
         </form>
         <div class="register-text">
@@ -81,7 +81,7 @@
 
     <script>
         document.getElementById('login-form').addEventListener('submit', async (event) => {
-            event.preventDefault(); // Evitar envío del formulario por defecto
+            event.preventDefault(); 
 
             const formData = new FormData(event.target);
             const username = formData.get('username');
