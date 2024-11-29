@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Form, HTTPException, Request, Cookie, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
 from database.models import ExpClinicoPaciente, RecMedicaPaciente, Usuario, CitaMedica
@@ -88,11 +88,9 @@ def agendarCitaForm(
 ):
     if not access_token:
         return RedirectResponse("/", status_code=302)
-    
     try:
         user_data = decode_token(access_token)
         user = get_user(user_data["username"], db)
-        
         if not user:
             return RedirectResponse("/", status_code=302)
         medico = db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
@@ -140,14 +138,14 @@ def agendarCita(
         id_paciente = user.id_usuario 
         medico = db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
         if not medico:
-            return {"error": "El médico seleccionado no existe."}
+            return JSONResponse(content={"error": "El médico seleccionado no existe."}, status_code=400)
         if "T" in hora_cita:
             hora_cita = hora_cita.split("T")[1]
         cita_str = f"{fecha_cita}T{hora_cita}:00"
         print(f"Fecha y hora combinadas: {cita_str}")
         cita_existente = db.query(CitaMedica).filter(CitaMedica.fecha_cita == cita_str).first()
         if cita_existente:
-            return {"error": "La hora seleccionada ya está ocupada."}
+            return JSONResponse(content={"error": "La hora seleccionada ya está ocupada."}, status_code=409)
         nueva_cita = CitaMedica(
             id_medico=id_usuario,
             id_usuario=id_paciente,
@@ -156,10 +154,10 @@ def agendarCita(
         db.add(nueva_cita)
         db.commit()
         return RedirectResponse(f"/users/agendarCita/{id_usuario}", status_code=302)
-
     except Exception as e:
         print(f"Error: {e}")
         return RedirectResponse("/", status_code=302)
+
 
 
 
@@ -283,14 +281,11 @@ def ver_expediente_usuario(
 ):
     if not access_token:
         raise HTTPException(status_code=401, detail="No autorizado")
-
     try:
         user_data = decode_token(access_token)
         user = get_user(user_data["username"], db)
         if not user or user.rol != 0:  # rol = 0 para usuarios regulares
             raise HTTPException(status_code=403, detail="Acceso denegado")
-
-        # Obtener anotaciones del expediente clínico
         anotaciones = db.query(ExpClinicoPaciente).filter(ExpClinicoPaciente.id_usuario == user.id_usuario).all()
 
         return templates.TemplateResponse(
@@ -302,43 +297,45 @@ def ver_expediente_usuario(
         raise HTTPException(status_code=500, detail="Error interno del servidor")
 
 
-@router.get("/users/ver-receta/{id_cita/{id_receta}}", response_class=HTMLResponse)
-def ver_receta_usuario(
-    id_cita: int,
-    id_receta:int,
+@router.get("/users/ver-receta-cliente/{id_receta}", response_class=HTMLResponse)
+def ver_receta_cliente(
+    id_receta: int,
     request: Request,
     access_token: str | None = Cookie(None),
     db: Session = Depends(get_db)
 ):
     if not access_token:
         raise HTTPException(status_code=401, detail="No autorizado")
-
     try:
-        # Validar usuario autenticado
+        # Decodificar el token para obtener el id del paciente
         user_data = decode_token(access_token)
         user = get_user(user_data["username"], db)
-        if not user or user.rol != 0:
+
+        if not user or user.rol != 0:  # Asegúrate de que el rol 2 corresponde a "paciente"
             raise HTTPException(status_code=403, detail="Acceso denegado")
 
-        # Obtener la receta asociada a la cita
-        receta = db.query(RecMedicaPaciente).filter(
-            RecMedicaPaciente.id_receta == id_receta,
-            RecMedicaPaciente.id_cita == id_cita,
-            RecMedicaPaciente.id_usuario == user.id_usuario
-        ).first()
-
-        # Si no hay receta, retornar mensaje
+        # Buscar la receta y verificar que pertenece al paciente actual
+        receta = (
+            db.query(RecMedicaPaciente)
+            .join(CitaMedica, RecMedicaPaciente.id_cita == CitaMedica.id_cita)
+            .filter(
+                RecMedicaPaciente.id_receta == id_receta,
+                CitaMedica.id_usuario == user.id_usuario 
+            )
+            .first()
+        )
         if not receta:
-            return HTMLResponse("<h1>No se encontró una receta para esta cita</h1>")
+            raise HTTPException(status_code=404, detail="Receta no encontrada o no pertenece al paciente actual")
 
-        # Renderizar receta
+        # Renderizar la vista
         return templates.TemplateResponse(
             "viewsU/receta.html",
             {"request": request, "receta": receta}
         )
     except Exception as e:
-        print(f"Error al obtener la receta: {e}")
+        print(f"Error al cargar la receta para el cliente: {e}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
+
 
 
 

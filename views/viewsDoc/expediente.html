@@ -6,7 +6,7 @@
     <title>Expediente del Paciente</title>
 </head>
 <body>
-    <h1>Expediente del Paciente</h1>
+    <h1>Expediente del Paciente</h1><a href="/users/mis-pacientes">Volver a ver a mis pacientes</a>
 
     <!-- Lista de anotaciones -->
     <ul>
@@ -48,6 +48,7 @@
 
             <!-- Botón para redirigir a la vista de actualización -->
             <a href="/users/actualizar-anotacion/{{ anotacion.id_expediente }}">Actualizar</a>
+            <p>{{anotacion.fecha_cita}}</p>
         </li>
         {% endfor %}
     </ul>

@@ -13,7 +13,7 @@ class CitaMedica(Base):
     confirm_cita = Column(Boolean, default=False)
     usuario = relationship("Usuario", foreign_keys=[id_usuario])
     medico = relationship("Usuario", foreign_keys=[id_medico])
-    # recetas = relationship("RecMedicaPaciente", back_populates="cita")
+    receta = relationship("RecMedicaPaciente", back_populates="cita", uselist=False)
 
 class RecMedicaPaciente(Base):
     __tablename__ = 'Rec_Medica_Paciente'
@@ -23,8 +23,9 @@ class RecMedicaPaciente(Base):
     id_cita = Column(Integer, ForeignKey("cita_medica.id_cita"))  # Cambié de "CitaMedica" a "cita_medica"
     anotaciones_receta_paciente = Column(Text, nullable=False)
     fecha_cita = Column(DateTime)
-    # cita = relationship("CitaMedica", foreign_keys=[id_cita])
+    cita = relationship("CitaMedica", foreign_keys=[id_cita])
     medico=relationship("Usuario",foreign_keys=[id_medico])
+    usuario = relationship("Usuario", foreign_keys=[id_usuario])
 
 class Usuario(Base):
     __tablename__ = 'usuarios'

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receta Médica</title>
+</head>
+<body>
+    <h1>Receta Médica</h1>
+    <label>Paciente: {{ receta.usuario.nombre }} {{ receta.usuario.apellido }}</label><br>
+    <label>Fecha de la cita: {{ receta.fecha_cita }}</label><br>
+    <label for="anotaciones_receta_paciente">Anotaciones:</label><br>
+    <textarea disabled name="anotaciones_receta_paciente" id="anotaciones_receta_paciente" rows="5" cols="40">{{ receta.anotaciones_receta_paciente }}</textarea><br><br>
+    <a href="/users/dashboard" class="button">Regresar al Dashboard</a>
+</body>
+</html>

@@ -7,12 +7,12 @@
 </head>
 <body>
     <h1>Agendar Cita</h1>
-    <form action="/users/agendarCita/{{ id_usuario }}" method="post" onsubmit="showSuccessAlert()">
+    <form id="agendarCitaForm">
         <label for="medico">Médico Seleccionado:</label>
         <input type="text" id="medico" value="{{ medico.nombre }}" readonly />
     
         <label for="fecha_cita">Fecha:</label>
-        <input type="date" name="fecha_cita" id="fecha_cita" required>
+        <input type="date" name="fecha_cita" id="fecha_cita" required />
     
         <label for="hora_cita">Hora:</label>
         <select name="hora_cita" id="hora_cita" required>
@@ -21,9 +21,62 @@
             {% endfor %}
         </select>
     
-        <input type="hidden" name="id_medico" value="{{ medico.id_usuario }}">
         <button type="submit">Agendar</button>
     </form>
+    
+    <a href="/users/details/{{ id_usuario }}">Cancelar</a>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const form = document.getElementById('agendarCitaForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evitar envío directo
+    
+            const formData = new FormData(form);
+            const fecha_cita = formData.get('fecha_cita');
+            const hora_cita = formData.get('hora_cita');
+            
+            try {
+                const response = await fetch(`/users/agendarCita/{{ id_usuario }}`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    if (response.status === 409) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hora no disponible',
+                            text: data.error,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Hubo un problema al agendar la cita.',
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cita agendada',
+                        text: 'La cita ha sido agendada exitosamente.',
+                    }).then(() => {
+                        window.location.href = `/users/agendarCita/{{ id_usuario }}`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error al enviar la solicitud:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al procesar tu solicitud.',
+                });
+            }
+        });
+    </script>
+    
     <a href="/users/details/{{ id_usuario }}">Cancelar</a>
 </body>
 </html>

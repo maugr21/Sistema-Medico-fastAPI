@@ -21,24 +21,53 @@ templates=Jinja2Templates(directory="views")
 def dashboard_doc(request: Request, access_token: str | None = Cookie(None), db: Session = Depends(get_db)):
     if not access_token:
         return RedirectResponse("/", status_code=302)
-
     try:
         user_data = decode_token(access_token)
         user = get_user(user_data["username"], db)
         if not user or user.rol != 1: 
             return RedirectResponse("/", status_code=302)
 
-        # Obtén todas las citas y las recetas asociadas
+        #Citas y las recetas 
         citas = db.query(CitaMedica).filter(CitaMedica.id_medico == user.id_usuario).all()
         recetas = db.query(RecMedicaPaciente).filter(RecMedicaPaciente.id_medico == user.id_usuario).all()
-
+        for cita in citas:
+            cita.receta=(
+                db.query(RecMedicaPaciente)
+                .filter(RecMedicaPaciente.id_cita==cita.id_cita)
+                .first()
+            )
         return templates.TemplateResponse("viewsDoc/dashboard.html", {"request": request, "citas": citas, "recetas": recetas})
     except Exception as e:
         print(f"{e}")
         return RedirectResponse("/", status_code=302)
+    
+@router.get("/users/mis-citas", response_class=RedirectResponse)
+def mis_citas(
+    request:Request,
+    access_token:str|None=Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not access_token:
+        return RedirectResponse("/", status_code=302)
+    try:
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user or user.rol != 1: 
+            return RedirectResponse("/", status_code=302)
 
-
-
+        #Citas y las recetas 
+        citas = db.query(CitaMedica).filter(CitaMedica.id_medico == user.id_usuario).all()
+        recetas = db.query(RecMedicaPaciente).filter(RecMedicaPaciente.id_medico == user.id_usuario).all()
+        for cita in citas:
+            cita.receta=(
+                db.query(RecMedicaPaciente)
+                .filter(RecMedicaPaciente.id_cita==cita.id_cita)
+                .first()
+            )
+        return templates.TemplateResponse("viewsDoc/mis_citas.html", {"request": request, "citas": citas, "recetas": recetas})
+    except Exception as e:
+        print(f"{e}")
+        return RedirectResponse("/", status_code=302)
 
 @router.get("/users/crear-receta/{id_cita}", response_class=HTMLResponse)
 def crear_receta_form(id_cita:int, request:Request, access_token:str | None=Cookie(None),query_access_token:str | None = None, db:Session = Depends(get_db)):
@@ -62,43 +91,43 @@ def crear_receta_form(id_cita:int, request:Request, access_token:str | None=Cook
         print(f"Error al cargar el formulario de la receta: {e}")
         return RedirectResponse("/", status_code=302)
     
-    
 @router.post("/users/crear-receta/{id_cita}", response_class=RedirectResponse)
 def crear_receta(
-    id_cita:int,
-    anotaciones_receta_paciente:str=Form(...),
-    access_token:str | None = Cookie(None),
+    id_cita: int,
+    anotaciones_receta_paciente: str = Form(...),
+    access_token: str | None = Cookie(None),
     db: Session = Depends(get_db)
 ):
+    if not access_token:
+        return RedirectResponse("/", status_code=302)
+
     try:
-        if not access_token:
-            return RedirectResponse("/", status_code=302)
-        
-        user_data=decode_token(access_token)
-        user=get_user(user_data["username"],db)
-        
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
         if not user or user.rol != 1:
             return RedirectResponse("/", status_code=302)
-        
-        cita=db.query(CitaMedica).filter(CitaMedica.id_cita==id_cita).first()
+
+        # La cita pertenece al médico
+        cita = db.query(CitaMedica).filter_by(id_cita=id_cita, id_medico=user.id_usuario).first()
         if not cita:
             return RedirectResponse("/users/dashboard-doc", status_code=302)
-        
-        # Crear la receta y usar id_cita como llave foránea
+        receta_existente = db.query(RecMedicaPaciente).filter_by(id_cita=id_cita).first()
+        if receta_existente:
+            return RedirectResponse("/users/dashboard-doc", status_code=302)
         nueva_receta = RecMedicaPaciente(
             id_usuario=cita.id_usuario,
             id_medico=user.id_usuario,
-            id_cita=id_cita,  # Usando el id_cita como llave foránea
+            id_cita=id_cita,
             anotaciones_receta_paciente=anotaciones_receta_paciente,
             fecha_cita=cita.fecha_cita
         )
         db.add(nueva_receta)
         db.commit()
-        
-        return RedirectResponse("/users/dashboard-doc", status_code=302)
+        return RedirectResponse(f"/users/dashboard-doc/{nueva_receta.id_receta}", status_code=302)
     except Exception as e:
+        db.rollback()
         print(f"Error al crear la receta: {e}")
-        return RedirectResponse("/", status_code=302)
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
     
 @router.get("/users/mis-pacientes", response_class=HTMLResponse)
@@ -130,6 +159,37 @@ def mis_pacientes(
         print(f"Error al obtener pacientes:{e}")
         return RedirectResponse("/", status_code=302)
     
+@router.get("/users/actualizar-receta/{id_receta}", response_class=HTMLResponse)
+def formulario_actualizar_receta(
+    id_receta: int,
+    request: Request,
+    access_token: str | None = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not access_token:
+        raise HTTPException(status_code=401, detail="No autorizado")
+    try:
+        # Decodificar el token para obtener el id del médico
+        user_data = decode_token(access_token)
+        user = get_user(user_data["username"], db)
+        if not user or user.rol != 1:
+            raise HTTPException(status_code=403, detail="Acceso denegado")
+        # Buscar la receta y verificar que pertenece al médico actual
+        receta = db.query(RecMedicaPaciente).filter(
+            RecMedicaPaciente.id_receta == id_receta,
+            RecMedicaPaciente.id_medico == user.id_usuario
+        ).first()
+        if not receta:
+            raise HTTPException(status_code=404, detail="Receta no encontrada o no pertenece al médico actual")
+        # Renderizar el formulario de actualización
+        return templates.TemplateResponse(
+            "viewsDoc/actualizar_receta.html",
+            {"request": request, "receta": receta}
+        )
+    except Exception as e:
+        print(f"Error al cargar el formulario de actualización de receta: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+    
 @router.post("/users/actualizar-receta/{id_receta}", response_class=RedirectResponse)
 def actualizar_receta(
     id_receta: int,
@@ -139,26 +199,22 @@ def actualizar_receta(
 ):
     if not access_token:
         raise HTTPException(status_code=401, detail="No autorizado")
-
     try:
         user_data = decode_token(access_token)
         user = get_user(user_data["username"], db)
         if not user or user.rol != 1:
             raise HTTPException(status_code=403, detail="Acceso denegado")
-
-        receta = db.query(RecMedicaPaciente).filter_by(id_receta=id_receta).first()
+        receta = db.query(RecMedicaPaciente).filter_by(id_receta=id_receta, id_medico=user.id_usuario).first()
         if not receta:
-            raise HTTPException(status_code=404, detail="Receta no encontrada")
-
-        # Actualizar las anotaciones de la receta
+            raise HTTPException(status_code=404, detail="Receta no encontrada o no pertenece al médico actual")
         receta.anotaciones_receta_paciente = anotaciones_receta_paciente
         db.commit()
 
-        return RedirectResponse(f"/users/dashboard-doc", status_code=302)
+        return RedirectResponse("/users/dashboard-doc", status_code=302)
     except Exception as e:
         db.rollback()
         print(f"Error al actualizar la receta: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
 
 @router.post("/users/eliminar-receta/{id_receta}", response_class=JSONResponse)
@@ -188,34 +244,6 @@ def eliminar_receta(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
-@router.get("/users/actualizar-receta/{id_receta}", response_class=HTMLResponse)
-def formulario_actualizar_receta(
-    id_receta: int,
-    request: Request,
-    access_token: str | None = Cookie(None),
-    db: Session = Depends(get_db)
-):
-    if not access_token:
-        raise HTTPException(status_code=401, detail="No autorizado")
-
-    user_data = decode_token(access_token)
-    user = get_user(user_data["username"], db)
-    if not user or user.rol != 1:
-        raise HTTPException(status_code=403, detail="Acceso denegado")
-
-    receta = db.query(RecMedicaPaciente).filter_by(id_receta=id_receta).first()
-    if not receta:
-        raise HTTPException(status_code=404, detail="Receta no encontrada")
-
-    return templates.TemplateResponse(
-        "viewsDoc/actualizar_receta.html",
-        {"request": request, "receta": receta}
-    )
-
-
     
 @router.post("/users/guardar-expediente/{id_usuario}", response_class=RedirectResponse)
 def guardar_expediente(
@@ -256,8 +284,6 @@ def guardar_expediente(
         print(f"Error al guardar el expediente: {e}")
         return RedirectResponse("/", status_code=302)
 
-
-
 @router.delete("/users/eliminar-expediente/{id_expediente}", response_class=JSONResponse)
 def eliminar_expediente(
     id_expediente: int,
@@ -272,11 +298,9 @@ def eliminar_expediente(
         user = get_user(user_data["username"], db)
         if not user or user.rol != 1:
             raise HTTPException(status_code=403, detail="Acceso denegado")
-
-        # Buscar y eliminar la anotación específica
         anotacion = db.query(ExpClinicoPaciente).filter_by(id_expediente=id_expediente).first()
         if anotacion:
-            id_usuario = anotacion.id_usuario  # Guardar id_usuario para referencia
+            id_usuario = anotacion.id_usuario
             db.delete(anotacion)
             db.commit()
             return JSONResponse(content={"message": "Anotación eliminada exitosamente"}, status_code=200)
@@ -285,8 +309,6 @@ def eliminar_expediente(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error interno del servidor: {e}")
-
-
 
 @router.get("/users/ver-expediente/{id_usuario}", response_class=HTMLResponse)
 def ver_expediente(
@@ -318,8 +340,7 @@ def ver_expediente(
             "paciente": paciente
         }
     )
-
-    
+  
 @router.get("/users/actualizar-anotacion/{id_expediente}", response_class=HTMLResponse)
 def formulario_actualizar_anotacion(
     id_expediente: int,
@@ -397,38 +418,37 @@ def ver_expediente_usuario(
         print(f"Error al obtener el expediente del usuario: {e}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-
-@router.get("/users/ver-receta/{id_cita}", response_class=HTMLResponse)
-def ver_receta_usuario(
-    id_cita: int,
+@router.get("/users/ver-receta/{id_receta}", response_class=HTMLResponse)
+def ver_receta(
+    id_receta: int,
     request: Request,
     access_token: str | None = Cookie(None),
     db: Session = Depends(get_db)
 ):
     if not access_token:
         raise HTTPException(status_code=401, detail="No autorizado")
-
     try:
+        # Decodificar el token para obtener el id del médico
         user_data = decode_token(access_token)
         user = get_user(user_data["username"], db)
-        if not user or user.rol != 0:  # rol = 0 para usuarios regulares
+        if not user or user.rol != 1:
             raise HTTPException(status_code=403, detail="Acceso denegado")
-
+        # Buscar la receta y verificar que pertenece al médico actual
         receta = db.query(RecMedicaPaciente).filter(
-            RecMedicaPaciente.id_usuario == user.id_usuario,
-            RecMedicaPaciente.id_cita == id_cita
+            RecMedicaPaciente.id_receta == id_receta,
+            RecMedicaPaciente.id_medico == user.id_usuario
         ).first()
-
         if not receta:
-            raise HTTPException(status_code=404, detail="Receta no encontrada")
-
+            raise HTTPException(status_code=404, detail="Receta no encontrada o no pertenece al médico actual")
+        # Renderizar el formulario de actualización
         return templates.TemplateResponse(
-            "viewsU/receta.html",
-            {"request": request, "receta": receta, "user": user}
+            "viewsDoc/ver_receta.html",
+            {"request": request, "receta": receta}
         )
     except Exception as e:
-        print(f"Error al obtener la receta: {e}")
+        print(f"Error al cargar el formulario de actualización de receta: {e}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
+
 
 
 
