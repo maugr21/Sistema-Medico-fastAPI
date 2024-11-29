@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIS CITAS</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h1>MIS CITAS</h1>
+    <form action="/users/logout" method="post">
+        <input type="submit" value="Cerrar sesión">
+    </form>
+    <a href="/users/mis-pacientes" class="button">Ver pacientes clínicos</a>
+    <h2>Mis Citas</h2>
+    <a href="/users/dashboard-doc">Volver al home</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Fecha y hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td>{{ cita.usuario.nombre }} {{ cita.usuario.apellido }}</td>
+                <td>{{ cita.fecha_cita }}</td>
+                <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
+                <td>
+                    {% if cita.receta %}
+                        <!-- Si ya existe una receta, muestra solo el botón de "Ver receta" -->
+                        <a href="/users/ver-receta/{{ cita.receta.id_receta }}" class="button">Ver Receta</a>
+                    {% else %}
+                        <!-- Si no existe receta, permite crear una nueva -->
+                        <a href="/users/crear-receta/{{ cita.id_cita }}" class="button">Crear Receta</a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/users/actualizar-receta/{{ cita.receta.id_receta }}" class="button">Actualizar</a> |
+                    <button class="eliminar-receta-btn" data-id="{{ cita.receta.id_receta }}">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // SweetAlert para eliminar recetas
+        document.querySelectorAll('.eliminar-receta-btn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault(); // Evita el envío del formulario predeterminado
+                const recetaId = button.getAttribute('data-id');
+
+                const confirmation = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                });
+
+                if (confirmation.isConfirmed) {
+                    try {
+                        const response = await fetch(`/users/eliminar-receta/${recetaId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ _method: 'DELETE' }) // Simula método DELETE
+                        });
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Receta eliminada',
+                                text: 'La receta ha sido eliminada con éxito.',
+                            }).then(() => location.reload()); // Recargar la página
+                        } else if (response.status === 404) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Receta no encontrada',
+                                text: 'La receta que intentas eliminar no existe.',
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un problema al intentar eliminar la receta.',
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error al eliminar la receta:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error interno',
+                            text: 'No se pudo procesar tu solicitud. Intenta nuevamente.',
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

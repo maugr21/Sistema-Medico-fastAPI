@@ -1,17 +1,157 @@
 <tbody>
     {% for cita in citas %}
     <tr>
-        <td>{{ cita.fecha_cita }}</td>
         <td>{{ cita.medico.nombre }} {{ cita.medico.apellido }}</td>
+        <td>{{ cita.fecha_cita }}</td>
         <td>{{ "Confirmada" if cita.confirm_cita else "Pendiente" }}</td>
         <td>
-            <a href="/users/editarCita/{{ cita.id_cita }}">Editar</a> |
-            <form action="/users/eliminarCita/{{ cita.id_cita }}" method="post" style="display:inline;">
-                <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</button>
-            </form> |
-            <a href="/users/ver-receta/{{ cita.id_cita }}">Ver Receta</a>
+            <a href="/users/editarCita/{{ cita.id_cita }}" class="editar-cita-btn" data-id="{{ cita.id_cita }}">Editar</a> |
+            <button class="eliminar-cita-btn" data-id="{{ cita.id_cita }}">Eliminar</button> |
+            <a href="/users/ver-receta-cliente/{{ cita.receta.id_receta if cita.receta else '0' }}" 
+               class="ver-receta-btn button" 
+               data-id="{{ cita.receta.id_receta if cita.receta else '0' }}">
+               Ver Receta
+            </a>
         </td>
     </tr>
     {% endfor %}
 </tbody>
+<a href="/users/dashboard-user">Volver al dashboard</a>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Confirmar y procesar la eliminación
+    document.querySelectorAll('.eliminar-cita-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const citaId = button.getAttribute('data-id');
+
+            const confirmation = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (confirmation.isConfirmed) {
+                try {
+                    const response = await fetch(`/users/eliminarCita/${citaId}`, {
+                        method: 'POST',
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cita eliminada',
+                            text: 'La cita ha sido eliminada con éxito.',
+                        }).then(() => location.reload()); // Recargar la página
+                    } else if (response.status === 404) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Cita no encontrada',
+                            text: 'La cita que intentas eliminar no existe.',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Hubo un problema al intentar eliminar la cita.',
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error al eliminar la cita:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error interno',
+                        text: 'No se pudo procesar tu solicitud. Intenta nuevamente.',
+                    });
+                }
+            }
+        });
+    });
+
+    // Procesar la edición
+    document.querySelectorAll('.editar-cita-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const citaId = button.getAttribute('data-id');
+
+            try {
+                const response = await fetch(`/users/editarCita/${citaId}`, {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    window.location.href = `/users/editarCita/${citaId}`;
+                } else if (response.status === 404) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cita no encontrada',
+                        text: 'La cita que intentas editar no existe.',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un problema al intentar editar la cita.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error al editar la cita:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error interno',
+                    text: 'No se pudo procesar tu solicitud. Intenta nuevamente.',
+                });
+            }
+        });
+    });
+
+    // Ver receta
+    document.querySelectorAll('.ver-receta-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const recetaId = button.getAttribute('data-id');
+
+            if (recetaId === "0") {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sin receta',
+                    text: 'No existe una receta asociada a esta cita aún.',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`/users/ver-receta-cliente/${recetaId}`, {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    window.location.href = `/users/ver-receta-cliente/${recetaId}`;
+                } else if (response.status === 404) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Receta no encontrada',
+                        text: 'La receta no existe o no está asociada a esta cita.',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un problema al intentar cargar la receta.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error al verificar la receta:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error interno',
+                    text: 'No se pudo procesar tu solicitud. Intenta nuevamente.',
+                });
+            }
+        });
+    });
+</script>

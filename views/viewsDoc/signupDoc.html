@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
     <title>Registro de Doctor</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function showSuccessAlert(event) {
-            // Mostrar el mensaje de éxito
-            alert("Registrado exitosamente, gracias");
-
-            // Continuar con el envío del formulario
+            event.preventDefault(); 
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso',
+                text: 'El doctor ha sido registrado con éxito.',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                event.target.submit();
+            });
         }
     </script>
 </head>
@@ -39,4 +45,5 @@
     </form>
 </body>
 </html>
+
 

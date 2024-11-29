@@ -4,14 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <h1>LOGIN</h1>
-    <form action="/users/login" method="post">
+    <form id="login-form" action="/users/login" method="post">
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" id="password" placeholder="password" required>
         <input type="submit" value="Login">
     </form>
     Si no tienes una cuenta <a href="/select-role">Registrate aquí</a>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evitar envío del formulario por defecto
+
+            const formData = new FormData(event.target);
+            const username = formData.get('username');
+            const password = formData.get('password');
+
+            try {
+                const response = await fetch('/users/login', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        username: username,
+                        password: password,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Si el login es exitoso, redirigir a la página deseada
+                    window.location.href = '/users/dashboard-user'; // Cambiar a tu ruta de dashboard
+                } else {
+                    // Si las credenciales no son correctas, mostrar SweetAlert de error
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: 'Algo salió mal. Verifica tus datos e intenta nuevamente.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error al intentar iniciar sesión:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: 'Hubo un problema al intentar iniciar sesión. Intenta nuevamente.',
+                });
+            }
+        });
+    </script>
 </body>
 </html>

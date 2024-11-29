@@ -2,10 +2,19 @@
 <html lang="en">
 <head>
     <title>Registro de Paciente</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function showSuccessAlert(event) {
-            alert("Registrado exitosamente, gracias");
-        }
+            function showSuccessAlert(event) {
+                event.preventDefault(); 
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registro exitoso',
+                    text: 'El usuario ha sido registrado con éxito.',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    event.target.submit();
+                });
+            }
     </script>
 </head>
 <body>
